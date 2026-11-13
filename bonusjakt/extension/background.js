@@ -8,7 +8,7 @@ import { redactEntry } from "./redact.js";
 
 const ALARM = "bonusjakt";
 const INTERVAL_MIN = 180;
-const MAX_RECORDINGS = 25;
+const MAX_RECORDINGS = 60;
 
 // ---------- Notifications (desktop + optional Telegram) ----------
 const notifier = {

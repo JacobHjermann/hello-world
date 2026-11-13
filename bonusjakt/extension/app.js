@@ -140,15 +140,24 @@ $("testnotify").onclick = async () => {
 $("demo").onchange = async (e) => { await call("saveSettings", { patch: { demo: e.target.checked } }); await load(); };
 
 // ---------- Recorder ----------
-$("recording").onchange = async (e) => { await call("setRecording", { on: e.target.checked }); toast(e.target.checked ? "Opptak er på. Gjør et bonussøk på flysas.com." : "Opptak er av."); };
+$("recording").onchange = async (e) => { await call("setRecording", { on: e.target.checked }); toast(e.target.checked ? "Opptak er på. Last flysas.com på nytt (F5) før du søker." : "Opptak er av."); };
 $("recclear").onclick = async () => { await call("clearRecordings"); await load(); toast("Opptaket er slettet."); };
-$("recdownload").onclick = async () => {
+// The toolbar popup closes as soon as a download starts, so the download runs from a full tab.
+async function downloadRecordings() {
   const { recordings } = await call("getRecordings");
-  if (!recordings.length) return toast("Ingenting er tatt opp ennå.");
+  if (!recordings.length) throw new Error("Ingenting er tatt opp ennå. Slå på opptak, last flysas.com på nytt (F5) og gjør et bonussøk.");
   const blob = new Blob([JSON.stringify({ version: chrome.runtime.getManifest().version, recordings }, null, 2)], { type: "application/json" });
-  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `bonusjakt-opptak-${new Date().toISOString().slice(0, 10)}.json` });
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  const url = URL.createObjectURL(blob);
+  await chrome.downloads.download({ url, filename: `bonusjakt-opptak-${new Date().toISOString().slice(0, 10)}.json` });
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  return recordings.length;
+}
+$("recdownload").onclick = async () => {
+  if (document.documentElement.classList.contains("popup")) {
+    chrome.tabs.create({ url: chrome.runtime.getURL("app.html?full&download") });
+    return;
+  }
+  try { toast(`Lastet ned ${await downloadRecordings()} svar. Fila ligger i Nedlastinger-mappen.`); } catch (err) { toast(err.message); }
 };
 
 // ---------- Load ----------
@@ -181,6 +190,10 @@ async function load() {
     $("want").min = status.today;
     $("want").value = addDays(status.today, 60);
     flexNote();
+    if (location.search.includes("download")) {
+      document.querySelector(".rec").scrollIntoView();
+      try { toast(`Lastet ned ${await downloadRecordings()} svar. Fila ligger i Nedlastinger-mappen.`); } catch (err) { toast(err.message); }
+    }
   } catch (err) {
     $("list").innerHTML = `<div class="empty">${esc(err.message)}</div>`;
   }

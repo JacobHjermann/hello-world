@@ -2,7 +2,9 @@
 // Nothing is sent anywhere: the extension only stores them locally, and only while recording is on.
 (() => {
   const TAG = "__bonusjakt_rec";
-  const RX = /(offer|flight|award|avail|search|calendar|point|bonus|reward|fare|bound)/i;
+  // Skip obvious tracking/analytics calls; keep every other JSON answer.
+  const SKIP = /(analytics|collect|beacon|telemetry|tracking|optimizely|adobe|google|doubleclick|newrelic|datadog|sentry|hotjar|cookie|consent)/i;
+  const RX = { test: (u) => !SKIP.test(String(u)) };
   const post = (d) => window.postMessage({ [TAG]: true, ...d }, location.origin);
   const bodyText = (b) => (typeof b === "string" ? b.slice(0, 5000) : null);
 
