@@ -1,0 +1,22 @@
+/* Extension tweaks on top of the site's styles (shared/styles.css). */
+html.popup body{width:460px}
+html.popup .hero-inner{padding-block:14px 18px;gap:14px}
+html.popup .headline h1{font-size:22px;margin:0 0 2px}
+html.popup .row{grid-template-columns:1fr 1fr}
+html.popup .filters{grid-template-columns:1fr}
+html.popup .card{grid-template-columns:1fr;gap:10px}
+html.popup .price{text-align:left;justify-items:start}
+html.popup .actions{flex-direction:column;align-items:stretch}
+html.popup .btns{justify-content:flex-end}
+html:not(.popup) .openfull{display:none}
+.top-right{display:flex;gap:8px;align-items:center}
+.openfull{color:#fff;text-decoration:none}
+.openfull:hover{background:rgba(255,255,255,.3)}
+.alerts>div:first-child{display:grid;gap:4px}
+.settings{border-top:0;padding-top:0}
+.channel-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.rec{display:grid;gap:10px;background:var(--surface-2);border-radius:12px;padding:14px}
+.rec ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:14px}
+.status{padding-block:14px 4px}
+input[type=password]{font:inherit;color:var(--fg);background:var(--surface-2);border:1px solid transparent;border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+.rec .btn.ghost{background:var(--surface);border:1px solid var(--line)}

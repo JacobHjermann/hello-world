@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bonusjakt</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="shared/styles.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="hero" id="hero">
+  <div class="scene on" data-scene="all"></div>
+  <div class="scene" data-scene="europa"></div>
+  <div class="scene" data-scene="nord-amerika"></div>
+  <div class="scene" data-scene="sor-amerika"></div>
+  <div class="scene" data-scene="asia"></div>
+  <div class="scene" data-scene="midtosten"></div>
+  <div class="scene" data-scene="afrika"></div>
+  <div class="scene" data-scene="oseania"></div>
+  <div class="wrap hero-inner">
+    <div class="topbar">
+      <div class="brand"><span class="brand-mark">✦</span>Bonusjakt</div>
+      <div class="top-right">
+        <span class="mode-pill" id="mode"></span>
+        <a class="mode-pill openfull" id="openfull" href="app.html?full" target="_blank">Åpne stort ↗</a>
+      </div>
+    </div>
+    <div class="headline">
+      <h1 id="h1">Finn ledige bonusseter før alle andre</h1>
+      <div class="dest-caption" id="caption">Nordlys over fjorden · alle destinasjoner</div>
+    </div>
+
+    <form class="console" id="search" autocomplete="off">
+      <div class="row">
+        <div class="field"><label for="from">Fra</label><select id="from"></select></div>
+        <div class="field"><label for="want">Ønsket avreise</label><input id="want" type="date"></div>
+        <div class="field"><label for="flex">Fleksibel dato</label>
+          <select id="flex"><option value="0">Kun denne datoen</option><option value="3">± 3 dager</option><option value="7" selected>± 7 dager</option><option value="14">± 14 dager</option></select></div>
+        <div class="field"><label for="paxv">Antall reisende</label>
+          <div class="pax"><button type="button" id="minus" aria-label="Færre reisende">−</button><output id="paxv">2</output><button type="button" id="plus" aria-label="Flere reisende">+</button></div></div>
+      </div>
+      <div class="filters">
+        <div><span class="group-label">Verdensdel</span>
+          <div class="chips" id="regions">
+            <button type="button" class="chip" data-v="all" aria-pressed="true">Hele verden</button>
+            <button type="button" class="chip" data-v="europa" aria-pressed="false">Europa</button>
+            <button type="button" class="chip" data-v="nord-amerika" aria-pressed="false">Nord-Amerika</button>
+            <button type="button" class="chip" data-v="sor-amerika" aria-pressed="false">Sør-Amerika</button>
+            <button type="button" class="chip" data-v="asia" aria-pressed="false">Asia</button>
+            <button type="button" class="chip" data-v="midtosten" aria-pressed="false">Midtøsten</button>
+            <button type="button" class="chip" data-v="afrika" aria-pressed="false">Afrika</button>
+            <button type="button" class="chip" data-v="oseania" aria-pressed="false">Oseania</button>
+          </div></div>
+        <div><span class="group-label">Seteklasse</span>
+          <div class="chips" id="cabins">
+            <button type="button" class="chip" data-v="business" aria-pressed="true">Business</button>
+            <button type="button" class="chip" data-v="premium" aria-pressed="false">Premium</button>
+            <button type="button" class="chip" data-v="economy" aria-pressed="false">Economy</button>
+          </div></div>
+      </div>
+      <div class="actions">
+        <div class="toggles">
+          <label class="switch"><input type="checkbox" id="partners" checked><span class="knob"></span>Ta med partnerfly</label>
+          <label class="switch"><input type="checkbox" id="amex"><span class="knob"></span><span class="sw-text">Bruk Amex 2 for 1<small>Den andre reiser gratis på SAS-fly</small></span></label>
+        </div>
+        <div class="btns">
+          <button class="btn ghost" id="save" type="button">🔔 Varsle meg</button>
+          <button class="btn" id="go" type="submit">Søk nå</button>
+        </div>
+      </div>
+      <div class="flexnote" id="flexnote"></div>
+    </form>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="status">
+    <span><span class="dot" id="dot"></span><span id="autostate">Automatisk søk er på</span></span>
+    <span>Sist søkt: <b id="last">aldri</b></span>
+    <span>Neste: <b id="next">–</b></span>
+    <button class="linkbtn" id="runall" type="button">Kjør alle varsler nå</button>
+  </div>
+  <div class="banner" id="banner" hidden></div>
+
+  <div class="results-head" id="results-head" hidden>
+    <h2 id="count">Ledige bonusreiser</h2>
+  </div>
+  <div class="list" id="list"></div>
+
+  <section class="alerts" aria-labelledby="alerts-h">
+    <div>
+      <h2 id="alerts-h">Mine varsler</h2>
+      <p>Utvidelsen søker hver tredje time så lenge Chrome er åpen, og sier fra om hver ledige reise én gang.</p>
+    </div>
+    <div class="watches" id="watches"></div>
+  </section>
+
+  <section class="alerts" aria-labelledby="notify-h">
+    <div>
+      <h2 id="notify-h">Hvor skal varslene sendes?</h2>
+      <p>Varsel på PC-en virker med en gang. Telegram gir varsel på mobilen, også når du ikke sitter ved PC-en.</p>
+    </div>
+    <form class="settings" id="settings">
+      <label class="switch"><input type="checkbox" id="ch-desktop"><span class="knob"></span>Varsel på PC-en</label>
+      <label class="switch"><input type="checkbox" id="ch-telegram"><span class="knob"></span>Telegram</label>
+      <div class="channel-grid">
+        <input id="tg-token" type="password" placeholder="Bot-token fra @BotFather" aria-label="Telegram bot-token" autocomplete="off">
+        <input id="tg-chat" type="text" placeholder="Chat-ID, f.eks. 123456789" aria-label="Telegram chat-ID">
+      </div>
+      <div class="btns">
+        <button class="btn" type="submit">Lagre</button>
+        <button class="btn ghost" type="button" id="testnotify">Send testvarsel</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="alerts" aria-labelledby="source-h">
+    <div>
+      <h2 id="source-h">Datakilde</h2>
+      <p id="source-text"></p>
+    </div>
+    <label class="switch"><input type="checkbox" id="demo"><span class="knob"></span><span class="sw-text">Bruk eksempeldata<small>Slå av når SAS-koblingen er ferdig</small></span></label>
+    <div class="rec">
+      <div class="group-label">Ta opp et søk på flysas.com</div>
+      <ol>
+        <li>Slå på opptak under.</li>
+        <li>Gå til flysas.com og <b>last siden på nytt (F5)</b> hvis den allerede var åpen. Logg inn med EuroBonus og gjør ett vanlig bonussøk (for eksempel Oslo–New York, business, 2 personer). Bla gjerne litt i datoene.</li>
+        <li>Kom tilbake hit, slå av opptak og trykk «Last ned opptak». Send fila til Claude.</li>
+      </ol>
+      <label class="switch"><input type="checkbox" id="recording"><span class="knob"></span><span class="sw-text">Opptak<small id="reccount">0 svar tatt opp</small></span></label>
+      <div class="btns">
+        <button class="btn ghost" type="button" id="recdownload">Last ned opptak</button>
+        <button class="btn ghost" type="button" id="recclear">Slett opptak</button>
+      </div>
+      <small class="ch-note">Navn, e-post, telefon, EuroBonus-nummer og innloggingsnøkler fjernes før noe lagres. Opptaket ligger bare i din nettleser til du laster det ned.</small>
+    </div>
+  </section>
+  <p class="note">Bonusjakt bestiller ingenting. Sjekk alltid prisen på flysas.com før du bestiller. Amex 2 for 1 regnes bare på fly SAS selv flyr.</p>
+</main>
+<script src="shared/scenes.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
