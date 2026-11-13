@@ -42,7 +42,8 @@ export const config = {
   email: {
     host: env.SMTP_HOST || "",
     port: num(env.SMTP_PORT, 587),
-    secure: env.SMTP_SECURE === "true",
+    // Port 465 always uses TLS from the start; other ports upgrade with STARTTLS.
+    secure: env.SMTP_SECURE ? env.SMTP_SECURE === "true" : num(env.SMTP_PORT, 587) === 465,
     user: env.SMTP_USER || "",
     pass: env.SMTP_PASS || "",
     from: env.MAIL_FROM || env.SMTP_USER || "",

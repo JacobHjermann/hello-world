@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Oslo → Asia i business",
+    "from": "OSL",
+    "want": "2027-03-15",
+    "flex": 7,
+    "region": "asia",
+    "cabins": ["business"],
+    "pax": 2,
+    "partners": true,
+    "amex": true
+  },
+  {
+    "name": "Oslo → Nord-Amerika",
+    "from": "OSL",
+    "want": "2027-05-10",
+    "flex": 7,
+    "region": "nord-amerika",
+    "cabins": ["business", "premium"],
+    "pax": 2,
+    "partners": true,
+    "amex": true
+  }
+]

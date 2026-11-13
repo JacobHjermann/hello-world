@@ -34,6 +34,44 @@ Uten `SEATSAERO_API_KEY` viser siden eksempeldata, så du kan prøve alt før du
 
 Når nøkkelen er lagt inn, kjør `npm run check-api`. Det viser hva seats.aero faktisk sender, så du ser at poeng, seter og skatter tolkes riktig.
 
+## Gratis: kjør varslene med GitHub Actions
+
+GitHub kan kjøre søket hver tredje time uten at du har en egen server. Da er det bare seats.aero som koster penger. Nettsiden med «Søk nå» er ikke med i denne varianten; varslene styres fra fila `bonusjakt/watches.json`.
+
+1. **Endre varslene** i `bonusjakt/watches.json` direkte på GitHub (blyant-ikonet). Hvert varsel har disse feltene:
+
+   | Felt | Betyr | Eksempel |
+   | --- | --- | --- |
+   | `name` | Navnet du ser i varselet | `"Oslo → Asia i business"` |
+   | `from` | Avreiseflyplass | `"OSL"`, `"BGO"`, `"TRD"`, `"SVG"`, `"CPH"`, `"ARN"` |
+   | `want` | Ønsket avreisedato | `"2027-03-15"` |
+   | `flex` | Dager før og etter | `0`, `3`, `7` eller `14` |
+   | `region` | Verdensdel | `"all"`, `"europa"`, `"nord-amerika"`, `"sor-amerika"`, `"asia"`, `"midtosten"`, `"afrika"`, `"oseania"` |
+   | `cabins` | Seteklasser | `["business"]`, `["business", "premium"]`, `["economy"]` |
+   | `pax` | Antall reisende | `2` |
+   | `partners` | Ta med partnerfly | `true` / `false` |
+   | `amex` | Bruk Amex 2 for 1 | `true` / `false` |
+
+2. **Legg inn secrets** under repoet → **Settings → Secrets and variables → Actions → New repository secret**:
+
+   | Navn | Hva |
+   | --- | --- |
+   | `SEATSAERO_API_KEY` | Nøkkelen fra seats.aero |
+   | `TELEGRAM_BOT_TOKEN` | Token fra @BotFather (for Telegram) |
+   | `TELEGRAM_CHAT_ID` | Chat-ID-en din (for Telegram) |
+   | `SMTP_HOST` | `smtp.gmail.com` (for e-post) |
+   | `SMTP_PORT` | `465` |
+   | `SMTP_USER` | Gmail-adressen din |
+   | `SMTP_PASS` | App-passordet fra Google (ikke det vanlige passordet) |
+   | `MAIL_FROM` | Gmail-adressen din |
+   | `ALERT_EMAIL` | Adressen varslene skal til |
+
+   Du trenger bare secrets for kanalene du vil bruke.
+
+3. **Test med en gang**: gå til **Actions → Bonusjakt → Run workflow**. Loggen viser hvor mange ledige reiser hvert varsel fant, og om varslet ble sendt.
+
+Hvis en kjøring feiler (for eksempel feil API-nøkkel), blir den rød, og GitHub sender deg en e-post om det. Planlagte kjøringer virker bare fra hovedgrenen (`master`), så endringene må være slått sammen dit.
+
 ## Sett den på en server (Railway)
 
 Railway er det enkleste alternativet som står på hele tiden og har lagring.

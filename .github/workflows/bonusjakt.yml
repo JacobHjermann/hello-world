@@ -1,0 +1,66 @@
+name: Bonusjakt
+
+on:
+  schedule:
+    # Hver tredje time (UTC). GitHub kan starte noen minutter forsinket.
+    - cron: "17 */3 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: bonusjakt
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: bonusjakt
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: bonusjakt/package-lock.json
+
+      - run: npm ci --omit=dev
+
+      # Husker hvilke reiser som allerede er varslet, så du ikke får samme varsel flere ganger.
+      - name: Hent lagret tilstand
+        uses: actions/cache/restore@v4
+        with:
+          path: bonusjakt/data
+          key: bonusjakt-state-${{ github.run_id }}
+          restore-keys: bonusjakt-state-
+
+      - name: Søk og send varsler
+        run: node scripts/run-alerts.js
+        env:
+          DATA_DIR: data
+          SEATSAERO_API_KEY: ${{ secrets.SEATSAERO_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM: ${{ secrets.TWILIO_FROM }}
+          ALERT_PHONE: ${{ secrets.ALERT_PHONE }}
+
+      - name: Lagre tilstand
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: bonusjakt/data
+          key: bonusjakt-state-${{ github.run_id }}
