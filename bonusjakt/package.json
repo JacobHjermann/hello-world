@@ -11,8 +11,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "test": "node --test test/*.test.js",
-    "check-api": "node scripts/check-api.js"
+    "test": "node scripts/build-extension.js --check && node --test test/*.test.js",
+    "check-api": "node scripts/check-api.js",
+    "build:extension": "node scripts/build-extension.js"
   },
   "dependencies": {
     "express": "^4.22.3",

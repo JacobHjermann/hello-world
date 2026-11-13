@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Bonusjakt",
+  "version": "0.1.0",
+  "description": "Søker etter ledige EuroBonus-bonusreiser på flysas.com hver tredje time og varsler deg når noe blir ledig.",
+  "minimum_chrome_version": "111",
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "action": { "default_title": "Bonusjakt", "default_popup": "app.html" },
+  "options_page": "app.html",
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["alarms", "storage", "notifications", "scripting", "tabs"],
+  "host_permissions": ["https://www.flysas.com/*", "https://api.flysas.com/*", "https://api.telegram.org/*"],
+  "content_scripts": [
+    { "matches": ["https://www.flysas.com/*"], "js": ["recorder-main.js"], "run_at": "document_start", "world": "MAIN" },
+    { "matches": ["https://www.flysas.com/*"], "js": ["recorder-bridge.js"], "run_at": "document_start" }
+  ]
+}

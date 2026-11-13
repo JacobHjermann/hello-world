@@ -72,6 +72,37 @@ GitHub kan kjøre søket hver tredje time uten at du har en egen server. Da er d
 
 Hvis en kjøring feiler (for eksempel feil API-nøkkel), blir den rød, og GitHub sender deg en e-post om det. Planlagte kjøringer virker bare fra hovedgrenen (`master`), så endringene må være slått sammen dit.
 
+## Chrome-utvidelse (søker på flysas.com med din egen innlogging)
+
+Utvidelsen i `bonusjakt/extension/` søker direkte på flysas.com gjennom Chrome, der du allerede er logget inn. Den trenger ingen server eller seats.aero, men virker bare mens PC-en står på og Chrome er åpen.
+
+**Status:** alt er klart unntatt selve lesingen av svarene fra SAS. Den skrives når Claude har fått et opptak av ett bonussøk. Til da viser utvidelsen eksempeldata.
+
+### Installer
+
+1. Last ned repoet: grønn **Code**-knapp på GitHub → **Download ZIP**, og pakk ut.
+2. Åpne `chrome://extensions` i Chrome.
+3. Slå på **Utviklermodus** øverst til høyre.
+4. Trykk **Last inn upakket** og velg mappen `bonusjakt/extension`.
+5. Fest Bonusjakt-ikonet i verktøylinjen (puslespillbrikken → nålen).
+
+### Ta opp et søk (for å gjøre SAS-koblingen ferdig)
+
+1. Åpne Bonusjakt, gå til **Datakilde** og slå på **Opptak**.
+2. Gå til flysas.com, logg inn med EuroBonus, og gjør ett vanlig bonussøk. Bla gjerne litt i datoene.
+3. Gå tilbake til Bonusjakt, slå av **Opptak**, og trykk **Last ned opptak**.
+4. Send fila til Claude.
+
+Navn, e-post, telefon, EuroBonus-nummer og innloggingsnøkler fjernes før noe lagres. Åpne gjerne fila og se gjennom den før du sender den.
+
+### Varsler
+
+Varsel på PC-en virker med en gang. For varsel på mobilen: lag en Telegram-bot hos @BotFather, send `/start` til boten, finn chat-ID-en din hos @userinfobot, og fyll inn begge under **Hvor skal varslene sendes?**.
+
+### For utviklere
+
+Søk, filtre, Amex-regning og varsellogikk er de samme filene som serveren bruker, kopiert til `extension/shared/`. Etter endringer i `src/` eller `public/`: kjør `npm run build:extension`. `npm test` sjekker at kopiene er oppdatert.
+
 ## Sett den på en server (Railway)
 
 Railway er det enkleste alternativet som står på hele tiden og har lagring.

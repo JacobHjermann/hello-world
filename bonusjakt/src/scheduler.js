@@ -1,5 +1,5 @@
 import { runSearch, todayIso } from "./search.js";
-import { buildAlertMessage } from "./notify.js";
+import { buildAlertMessage } from "./messages.js";
 
 /**
  * Runs every saved alert on a fixed interval (3 hours by default), and notifies about trips
