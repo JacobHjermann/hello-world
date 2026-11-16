@@ -11,9 +11,11 @@
   const MAX = 400000;
   const post = (d) => window.postMessage({ [TAG]: true, kind: "response", ...d }, location.origin);
   const bodyText = (b) => (typeof b === "string" ? b.slice(0, 20000) : b instanceof URLSearchParams ? b.toString().slice(0, 20000) : null);
+  // Every header name is kept (so it is clear what the site sends along); values only for harmless ones.
+  const mask = (k, v) => (KEEP_HEADERS.test(k) ? String(v).slice(0, 300) : "[skjult]");
   const headerList = (h) => {
     const out = {};
-    try { new Headers(h || {}).forEach((v, k) => { if (KEEP_HEADERS.test(k)) out[k] = String(v).slice(0, 300); }); } catch (e) { /* ignore */ }
+    try { new Headers(h || {}).forEach((v, k) => { out[k] = mask(k, v); }); } catch (e) { /* ignore */ }
     return out;
   };
 
@@ -25,7 +27,7 @@
       const ct = res.headers.get("content-type") || "";
       if (!SKIP.test(url) && TEXT.test(ct)) {
         const method = (init && init.method) || (input && input.method) || "GET";
-        const headers = headerList((init && init.headers) || (input && input.headers));
+        const headers = { ...headerList(input && input.headers), ...headerList(init && init.headers) };
         res.clone().text().then((t) => post({ url, method, headers, contentType: ct, body: bodyText(init && init.body), status: res.status, response: t.slice(0, MAX) })).catch(() => {});
       }
     } catch (e) { /* never disturb the site */ }
@@ -34,7 +36,9 @@
 
   const open = XMLHttpRequest.prototype.open;
   const send = XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.open = function (method, url) { this.__bj = { method, url }; return open.apply(this, arguments); };
+  const setHeader = XMLHttpRequest.prototype.setRequestHeader;
+  XMLHttpRequest.prototype.open = function (method, url) { this.__bj = { method, url, headers: {} }; return open.apply(this, arguments); };
+  XMLHttpRequest.prototype.setRequestHeader = function (k, v) { try { if (this.__bj) this.__bj.headers[String(k).toLowerCase()] = mask(k, v); } catch (e) { /* ignore */ } return setHeader.apply(this, arguments); };
   XMLHttpRequest.prototype.send = function (body) {
     const info = this.__bj;
     if (info && !SKIP.test(info.url)) {
@@ -42,7 +46,7 @@
         try {
           const ct = this.getResponseHeader("content-type") || "";
           if (!TEXT.test(ct)) return;
-          post({ url: new URL(info.url, location.href).href, method: info.method, headers: {}, contentType: ct, body: bodyText(body), status: this.status, response: String(this.responseText).slice(0, MAX) });
+          post({ url: new URL(info.url, location.href).href, method: info.method, headers: info.headers, contentType: ct, body: bodyText(body), status: this.status, response: String(this.responseText).slice(0, MAX) });
         } catch (e) { /* ignore */ }
       });
     }

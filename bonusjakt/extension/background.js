@@ -3,7 +3,7 @@ import { Scheduler } from "./shared/scheduler.js";
 import { runSearch, normalizeParams, describeParams, todayIso } from "./shared/search.js";
 import { REGIONS, ORIGINS } from "./shared/airports.js";
 import { createDemoProvider } from "./shared/providers/demo.js";
-import { createSasProvider } from "./sas.js";
+import { createSasProvider, diagnose } from "./sas.js";
 import { redactEntry } from "./redact.js";
 
 const ALARM = "bonusjakt";
@@ -114,6 +114,7 @@ const handlers = {
     if (!results.length) throw new Error("Ingen varslingskanal er slått på.");
     return { results };
   },
+  async diagnose() { return { report: await diagnose() }; },
   async setRecording({ on }) { await chrome.storage.local.set({ recording: Boolean(on) }); return { ok: true }; },
   // Answers arrive in bursts; saving them one at a time keeps any from being lost.
   recorded({ entry }) {

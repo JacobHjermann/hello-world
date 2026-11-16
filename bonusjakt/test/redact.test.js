@@ -32,7 +32,7 @@ test("redacts Next.js x-component text line by line", () => {
   assert.equal(out[2], "2:T12,Ring [skjult] eller skriv til [skjult], [skjult]");
 });
 
-test("keeps only harmless request headers", () => {
-  const e = redactEntry({ url: "https://www.flysas.com/x", method: "POST", headers: { "next-action": "abc", cookie: "s=1", authorization: "Bearer x", "content-type": "text/plain" }, response: "{}" });
-  assert.deepEqual(e.headers, { "next-action": "abc", "content-type": "text/plain" });
+test("keeps header names but hides values that could be secret", () => {
+  const e = redactEntry({ url: "https://www.sas.no/x", method: "POST", headers: { "next-action": "abc", cookie: "s=1", authorization: "Bearer x", "content-type": "text/plain" }, response: "{}" });
+  assert.deepEqual(e.headers, { "next-action": "abc", cookie: "[skjult]", authorization: "[skjult]", "content-type": "text/plain" });
 });

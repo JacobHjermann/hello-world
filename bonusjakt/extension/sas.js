@@ -1,5 +1,6 @@
 // Searches SAS's award seats on sas.no through the user's own browser session.
 // The answers are read in sas-parse.js; this file only does the fetching, pacing and caching.
+import { redactPlain } from "./redact.js";
 import { SAS_BASE, destinationsUrl, offersUrl, pickDestinations, parseAvailability, parseAwardPrices } from "./sas-parse.js";
 
 const PAUSE_MS = 2500;          // Pause between requests: about the pace of a person clicking around.
@@ -12,37 +13,65 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export class SasBlockedError extends Error {}
 
+async function findOrOpenTab() {
+  const [tab] = await chrome.tabs.query({ url: `${SAS_BASE}/*` });
+  if (tab) return { tab, opened: false };
+  const created = await chrome.tabs.create({ url: `${SAS_BASE}/award-finder`, active: false });
+  await waitForLoad(created.id);
+  return { tab: created, opened: true };
+}
+
 /**
  * Run `fetch` inside a sas.no tab, so the request carries the user's own cookies and login,
  * exactly as when they use the site themselves. Opens a background tab if none is open.
+ * Returns status, content type and text; never throws for HTTP errors.
  */
-export async function sasFetch(url) {
-  let [tab] = await chrome.tabs.query({ url: `${SAS_BASE}/*` });
-  let opened = false;
-  if (!tab) {
-    tab = await chrome.tabs.create({ url: `${SAS_BASE}/award-finder`, active: false });
-    opened = true;
-    await waitForLoad(tab.id);
-  }
+export async function sasRaw(url) {
+  const { tab, opened } = await findOrOpenTab();
   try {
     const [{ result }] = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       world: "MAIN",
       args: [url],
       func: async (u) => {
-        const res = await fetch(u, { credentials: "include", headers: { accept: "application/json" } });
-        return { status: res.status, ok: res.ok, type: res.headers.get("content-type") || "", text: await res.text() };
+        try {
+          const res = await fetch(u, { credentials: "include", headers: { accept: "application/json" } });
+          return { status: res.status, ok: res.ok, type: res.headers.get("content-type") || "", text: await res.text() };
+        } catch (e) { return { status: 0, ok: false, type: "", text: String(e && e.message || e) }; }
       },
     });
-    // A check page instead of data means SAS wants to confirm a person is there. Stop and say so; never work around it.
-    if (result.status === 403 || result.status === 429 || !result.type.includes("json")) {
-      throw new SasBlockedError("SAS ba om å bekrefte at du er et menneske, eller svarte ikke med data. Åpne sas.no, logg inn og gjør et vanlig søk. Bonusjakt prøver igjen ved neste runde.");
-    }
-    if (!result.ok) throw new Error(`SAS svarte med feil ${result.status}.`);
-    return JSON.parse(result.text);
+    return { ...result, tabPath: new URL(tab.url || tab.pendingUrl || SAS_BASE).pathname };
   } finally {
     if (opened) chrome.tabs.remove(tab.id).catch(() => {});
   }
+}
+
+const describe = (url, r) => `${new URL(url).pathname} → ${r.status || "ingen svar"} ${r.type.split(";")[0] || ""}: ${redactPlain(r.text.replace(/\s+/g, " ")).slice(0, 160)}`;
+
+/** Fetch JSON from sas.no; errors say exactly what SAS answered. */
+export async function sasFetch(url) {
+  const r = await sasRaw(url);
+  const isJson = r.type.includes("json");
+  if (r.ok && isJson) return JSON.parse(r.text);
+  // A check page means SAS wants to confirm a person is there. Stop and say so; never work around it.
+  if ((r.status === 403 || r.status === 429 || r.status === 503) && !isJson) {
+    throw new SasBlockedError(`SAS ba om å bekrefte at du er et menneske. Åpne sas.no og gjør et vanlig søk, så prøver Bonusjakt igjen ved neste runde. (${describe(url, r)})`);
+  }
+  if (r.status === 401) throw new Error(`SAS krever innlogging for dette søket. Logg inn på sas.no og prøv igjen. (${describe(url, r)})`);
+  throw new Error(`Uventet svar fra SAS. Send denne meldingen til Claude: ${describe(url, r)}`);
+}
+
+/** Two small test requests, for the "Test SAS-koblingen" button. */
+export async function diagnose() {
+  const lines = [];
+  for (const url of [destinationsUrl("OSL"), destinationsUrl("OSL", ["HND"], { availability: true })]) {
+    const r = await sasRaw(url);
+    let count = "";
+    try { const j = JSON.parse(r.text); count = Array.isArray(j) ? ` (${j.length} destinasjoner)` : ""; } catch { /* not JSON */ }
+    lines.push(`Fane: ${r.tabPath}\n${describe(url, r)}${count}`);
+    await sleep(PAUSE_MS);
+  }
+  return lines.join("\n\n");
 }
 
 function waitForLoad(tabId) {

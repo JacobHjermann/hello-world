@@ -143,6 +143,14 @@ $("testnotify").onclick = async () => {
 };
 $("demo").onchange = async (e) => { await call("saveSettings", { patch: { demo: e.target.checked } }); await load(); };
 
+// ---------- Diagnosis ----------
+$("diag").onclick = async () => {
+  const b = $("diag"), out = $("diag-out");
+  b.disabled = true; b.textContent = "Tester…"; out.hidden = false; out.textContent = "Spør sas.no …";
+  try { out.textContent = (await call("diagnose")).report; } catch (err) { out.textContent = err.message; }
+  b.disabled = false; b.textContent = "Test SAS-koblingen";
+};
+
 // ---------- Recorder ----------
 $("recording").onchange = async (e) => { await call("setRecording", { on: e.target.checked }); toast(e.target.checked ? "Opptak er på. Last sas.no på nytt (F5) før du søker." : "Opptak er av."); };
 $("recclear").onclick = async () => { await call("clearRecordings"); await load(); toast("Opptaket er slettet."); };

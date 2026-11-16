@@ -57,7 +57,7 @@ export function redactText(text) {
 
 export function redactEntry(e) {
   const headers = {};
-  for (const [k, v] of Object.entries(e.headers || {})) if (KEEP_HEADERS.test(k)) headers[k] = v;
+  for (const [k, v] of Object.entries(e.headers || {})) headers[k] = KEEP_HEADERS.test(k) ? v : "[skjult]";
   return {
     at: e.at, kind: e.kind || "response", method: e.method, status: e.status, contentType: e.contentType || null,
     url: redactUrl(e.url), headers, body: redactText(e.body), response: redactText(e.response),
