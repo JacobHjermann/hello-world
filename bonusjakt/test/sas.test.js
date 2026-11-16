@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { regionOf, pickDestinations, parseAvailability, parseAwardPrices, destinationsUrl, offersUrl } from "../extension/sas-parse.js";
+import { regionOf, pickDestinations, parseAvailability, parseAwardPrices, destinationsUrl, offersUrl, destinationChoices, awardFinderUrl } from "../extension/sas-parse.js";
 import { filterAndPrice, normalizeParams } from "../src/search.js";
 import { redactJson } from "../extension/redact.js";
 
@@ -79,4 +79,24 @@ test("builds the same URLs the site uses", () => {
 test("member profile data is masked whole", () => {
   const out = redactJson({ individual: { firstnameEnc: "x" }, address: { physical: [{ addressLine1: "Gate 1", zipCode: "0150" }] }, engagements: { euroBonus: { ebNumberEnc: "y" } }, crmReference: "z", sessionId: "s", customer: { extFirstNameTransliterated: "Kari" } });
   assert.deepEqual(out, { individual: "[skjult]", address: "[skjult]", engagements: "[skjult]", crmReference: "[skjult]", sessionId: "[skjult]", customer: { extFirstNameTransliterated: "[skjult]" } });
+});
+
+test("a chosen destination narrows the search to that one", () => {
+  assert.deepEqual(pickDestinations(destinations, { region: "europa", dest: "HND" }).map((d) => d.airportCode), ["HND"]);
+  const trips = parseAvailability(aal, { origin: "OSL", start: "2026-11-21", end: "2026-11-21" });
+  const other = { ...trips[0], key: "x", dest: "CPH" };
+  const params = normalizeParams({ from: "OSL", want: "2026-11-21", flex: 0, region: "asia", dest: "aal", cabins: ["business", "economy"], pax: 1 });
+  assert.equal(params.dest, "AAL");
+  const { results } = filterAndPrice([...trips, other], params, "2026-11-16");
+  assert.ok(results.length > 0 && results.every((r) => r.dest === "AAL"));
+  assert.throws(() => normalizeParams({ from: "OSL", want: "2026-11-21", dest: "Tokyo" }), /Ukjent destinasjon/);
+});
+
+test("destination list for the picker comes from SAS, sorted by city", () => {
+  const list = destinationChoices(destinations);
+  assert.equal(list.length, destinations.length);
+  const tokyo = list.find((d) => d.code === "HND");
+  assert.deepEqual(tokyo, { code: "HND", city: "Tokyo", airport: "Haneda", country: "Japan", region: "asia" });
+  assert.ok(list.every((d, i) => i === 0 || list[i - 1].city.localeCompare(d.city, "nb") <= 0));
+  assert.equal(awardFinderUrl("OSL", "HND"), "https://www.sas.no/award-finder?origin=OSL&destination=HND");
 });

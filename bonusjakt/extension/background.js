@@ -1,15 +1,13 @@
 import { ChromeStore } from "./store.js";
 import { Scheduler } from "./shared/scheduler.js";
 import { runSearch, normalizeParams, describeParams, todayIso } from "./shared/search.js";
-import { REGIONS, ORIGINS } from "./shared/airports.js";
+import { REGIONS, ORIGINS, CITIES } from "./shared/airports.js";
 import { createDemoProvider } from "./shared/providers/demo.js";
 import { createSasProvider, diagnose } from "./sas.js";
-import { redactEntry } from "./redact.js";
+import { destinationChoices, awardFinderUrl } from "./sas-parse.js";
 
 const ALARM = "bonusjakt";
 const INTERVAL_MIN = 180;
-const MAX_RECORDINGS = 150;
-let recordQueue = Promise.resolve();
 
 // ---------- Notifications (desktop + optional Telegram) ----------
 const notifier = {
@@ -36,7 +34,7 @@ const notifier = {
   },
 };
 chrome.notifications.onClicked.addListener((id) => {
-  chrome.tabs.create({ url: "https://www.sas.no/" });
+  chrome.tabs.create({ url: awardFinderUrl("OSL") });
   chrome.notifications.clear(id);
 });
 
@@ -65,28 +63,41 @@ async function runAll(reason) {
 }
 chrome.alarms.onAlarm.addListener((a) => { if (a.name === ALARM) runAll("automatisk"); });
 
-// ---------- Messages from the Bonusjakt page and the recorder ----------
+// ---------- Messages from the Bonusjakt page ----------
 const handlers = {
   async status() {
     const store = await ChromeStore.load();
     const alarm = await chrome.alarms.get(ALARM);
-    const { recording = false, recordings = [] } = await chrome.storage.local.get(["recording", "recordings"]);
     return {
       settings: store.settings, runs: store.runs, nextRun: alarm ? new Date(alarm.scheduledTime).toISOString() : null,
       intervalHours: INTERVAL_MIN / 60, running: Boolean(running), today: todayIso(),
       origins: ORIGINS, regions: Object.fromEntries(Object.entries(REGIONS).map(([k, v]) => [k, v.name])),
       watches: store.watches.map((w) => ({ id: w.id, name: w.name, params: w.params, summary: describeParams(w.params), lastRun: w.lastRun, lastHitCount: w.lastHitCount, lastError: w.lastError })),
-      recording, recordingCount: recordings.length,
     };
   },
+  // The search button shows seats first; points are filled in afterwards with prices().
   async search({ params }) {
     const store = await ChromeStore.load();
-    return runSearch(providerFor(store.settings), params, { today: todayIso() });
+    const provider = store.settings.demo ? createDemoProvider() : createSasProvider({ priceLookups: 0 });
+    return runSearch(provider, params, { today: todayIso() });
   },
-  async addWatch({ params, name }) {
+  async prices({ routes }) {
+    const store = await ChromeStore.load();
+    if (store.settings.demo) return {};
+    return createSasProvider().lookupPrices(routes);
+  },
+  // Destinations for the "Til" field: SAS's own Award Finder list for the chosen origin.
+  async destinations({ origin }) {
+    const store = await ChromeStore.load();
+    if (store.settings.demo) {
+      return Object.entries(CITIES).filter(([c]) => !ORIGINS[c]).map(([code, city]) => ({ code, city, airport: city, country: "", region: null }));
+    }
+    return destinationChoices(await createSasProvider().destinations(origin));
+  },
+  async addWatch({ params, name, destName }) {
     const store = await ChromeStore.load();
     const p = normalizeParams(params);
-    const region = p.region === "all" ? "Hele verden" : REGIONS[p.region].name;
+    const region = p.dest ? destName || p.dest : p.region === "all" ? "Hele verden" : REGIONS[p.region].name;
     const w = store.addWatch(p, String(name || `${ORIGINS[p.from]} → ${region}`).slice(0, 80));
     await store.flush();
     return { id: w.id, name: w.name };
@@ -115,20 +126,6 @@ const handlers = {
     return { results };
   },
   async diagnose() { return { report: await diagnose() }; },
-  async setRecording({ on }) { await chrome.storage.local.set({ recording: Boolean(on) }); return { ok: true }; },
-  // Answers arrive in bursts; saving them one at a time keeps any from being lost.
-  recorded({ entry }) {
-    recordQueue = recordQueue.then(async () => {
-      const { recording, recordings = [] } = await chrome.storage.local.get(["recording", "recordings"]);
-      if (!recording) return { ok: false };
-      recordings.push(redactEntry(entry));
-      await chrome.storage.local.set({ recordings: recordings.slice(-MAX_RECORDINGS) });
-      return { ok: true };
-    }).catch(() => ({ ok: false }));
-    return recordQueue;
-  },
-  async getRecordings() { const { recordings = [] } = await chrome.storage.local.get("recordings"); return { recordings }; },
-  async clearRecordings() { await chrome.storage.local.set({ recordings: [] }); return { ok: true }; },
 };
 
 chrome.runtime.onMessage.addListener((msg, _sender, reply) => {

@@ -98,7 +98,11 @@ async function cached(key, ttl, load) {
   return value;
 }
 
-export function createSasProvider({ fetchJson = sasFetch } = {}) {
+/**
+ * priceLookups: how many new routes to price during a search. Automatic runs use a few so alerts carry
+ * points; the search button uses 0 and prices the results afterwards (see lookupPrices).
+ */
+export function createSasProvider({ fetchJson = sasFetch, priceLookups = MAX_PRICE_LOOKUPS } = {}) {
   let calls = 0;
   const get = async (url) => { if (calls++) await sleep(PAUSE_MS); return fetchJson(url); };
 
@@ -115,8 +119,8 @@ export function createSasProvider({ fetchJson = sasFetch } = {}) {
     let res;
     try {
       res = await get(destinationsUrl(origin, codes, { availability: true }));
-    } catch (err) {
-      // A list request that fails (but SAS answers single ones) means lists aren't supported.
+    } catch {
+      // A list request that fails (while single ones work) means lists aren't supported.
       listsWork = false;
       return oneByOne(origin, codes);
     }
@@ -125,44 +129,56 @@ export function createSasProvider({ fetchJson = sasFetch } = {}) {
     return res;
   }
 
-  async function addPrices(trips) {
+  const destinations = (origin) => cached(`sasDest:${origin}`, DEST_TTL, () => get(destinationsUrl(origin)));
+
+  /**
+   * Award prices per route ("OSL-HND"), from the cache or looked up on the booking page, at most
+   * `limit` new lookups. A route whose price can't be found maps to null.
+   */
+  async function lookupPrices(routes, limit = Infinity) {
     const { sasPrices = {} } = await chrome.storage.local.get("sasPrices");
+    const out = {};
     let lookups = 0;
-    const byRoute = new Map();
-    for (const t of trips) if (!byRoute.has(`${t.origin}-${t.dest}`)) byRoute.set(`${t.origin}-${t.dest}`, t);
-    for (const [route, t] of byRoute) {
+    for (const { origin, dest, date } of routes) {
+      const route = `${origin}-${dest}`;
+      if (route in out) continue;
       const known = sasPrices[route];
-      if (known && Date.now() - known.at < PRICE_TTL) continue;
-      if (lookups >= MAX_PRICE_LOOKUPS) break;
+      if (known && Date.now() - known.at < PRICE_TTL) { out[route] = known.prices; continue; }
+      if (lookups >= limit) continue;
       lookups++;
       try {
-        const prices = parseAwardPrices(await get(offersUrl(t.origin, t.dest, t.date)));
-        if (Object.keys(prices).length) sasPrices[route] = { at: Date.now(), prices };
+        const prices = parseAwardPrices(await get(offersUrl(origin, dest, date)));
+        if (Object.keys(prices).length) { sasPrices[route] = { at: Date.now(), prices }; out[route] = prices; }
+        else out[route] = null;
       } catch {
-        // A missing price never stops the search: the seat is shown with "se prisen på sas.no".
+        // A missing price never stops anything: the seat is shown with a link to Award Finder.
+        out[route] = null;
       }
     }
     await chrome.storage.local.set({ sasPrices });
-    for (const t of trips) {
-      const p = sasPrices[`${t.origin}-${t.dest}`]?.prices?.[t.cabin];
-      if (p) { t.pts = p.pts; t.taxes = p.taxes; t.taxCurrency = p.currency; }
-    }
-    return trips;
+    return out;
   }
 
   return {
     name: "sas.no",
     live: true,
-    async fetchTrips({ origin, region, cabins, start, end }) {
+    destinations,
+    lookupPrices,
+    async fetchTrips({ origin, region, dest, cabins, start, end }) {
       calls = 0;
-      const all = await cached(`sasDest:${origin}`, DEST_TTL, () => get(destinationsUrl(origin)));
-      const dests = pickDestinations(all, { region });
+      const dests = pickDestinations(await destinations(origin), { region, dest });
       const trips = [];
       for (let i = 0; i < dests.length; i += CHUNK) {
         const codes = dests.slice(i, i + CHUNK).map((d) => d.airportCode);
         trips.push(...parseAvailability(await availability(origin, codes), { origin, start, end }));
       }
-      return addPrices(trips.filter((t) => cabins.includes(t.cabin)));
+      const wanted = trips.filter((t) => cabins.includes(t.cabin));
+      const prices = await lookupPrices(wanted.map(({ origin: o, dest: d, date }) => ({ origin: o, dest: d, date })), priceLookups);
+      for (const t of wanted) {
+        const p = prices[`${t.origin}-${t.dest}`]?.[t.cabin];
+        if (p) Object.assign(t, { pts: p.pts, taxes: p.taxes, taxCurrency: p.currency });
+      }
+      return wanted;
     },
   };
 }

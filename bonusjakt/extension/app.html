@@ -34,6 +34,9 @@
     <form class="console" id="search" autocomplete="off">
       <div class="row">
         <div class="field"><label for="from">Fra</label><select id="from"></select></div>
+        <div class="field"><label for="to">Til</label>
+          <input id="to" type="text" list="to-list" placeholder="Alle i valgt verdensdel" autocomplete="off">
+          <datalist id="to-list"></datalist></div>
         <div class="field"><label for="want">Ønsket avreise</label><input id="want" type="date"></div>
         <div class="field"><label for="flex">Fleksibel dato</label>
           <select id="flex"><option value="0">Kun denne datoen</option><option value="3">± 3 dager</option><option value="7" selected>± 7 dager</option><option value="14">± 14 dager</option></select></div>
@@ -125,20 +128,6 @@
       <button class="btn ghost" type="button" id="diag">Test SAS-koblingen</button>
     </div>
     <pre class="diag" id="diag-out" hidden></pre>
-    <div class="rec">
-      <div class="group-label">Ta opp et søk på sas.no</div>
-      <ol>
-        <li>Slå på opptak under.</li>
-        <li>Gå til <b>sas.no</b> og <b>last siden på nytt (F5)</b> hvis den allerede var åpen. Logg inn med EuroBonus og gjør ett vanlig bonussøk (for eksempel Oslo–New York, business, 2 personer). Bla gjerne litt i datoene.</li>
-        <li>Kom tilbake hit, slå av opptak og trykk «Last ned opptak». Send fila til Claude.</li>
-      </ol>
-      <label class="switch"><input type="checkbox" id="recording"><span class="knob"></span><span class="sw-text">Opptak<small id="reccount">0 svar tatt opp</small></span></label>
-      <div class="btns">
-        <button class="btn ghost" type="button" id="recdownload">Last ned opptak</button>
-        <button class="btn ghost" type="button" id="recclear">Slett opptak</button>
-      </div>
-      <small class="ch-note">Navn, e-post, telefon, EuroBonus-nummer og innloggingsnøkler fjernes før noe lagres. Opptaket ligger bare i din nettleser til du laster det ned.</small>
-    </div>
   </section>
   <p class="note">Bonusjakt bestiller ingenting. Sjekk alltid prisen på sas.no før du bestiller. Amex 2 for 1 regnes bare på fly SAS selv flyr.</p>
 </main>

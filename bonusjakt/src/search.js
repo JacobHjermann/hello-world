@@ -24,7 +24,10 @@ export function normalizeParams(input = {}) {
   if (!cabins.length || cabins.some((c) => !CABINS.includes(c))) throw new ValidationError("Velg minst én seteklasse.");
   const pax = Number(input.pax ?? 2);
   if (!Number.isInteger(pax) || pax < 1 || pax > 9) throw new ValidationError("Antall reisende må være mellom 1 og 9.");
-  return { from, want, flex, region, cabins, pax, partners: input.partners !== false, amex: Boolean(input.amex) };
+  // Optional single destination (IATA code). When set, it wins over the region.
+  const dest = String(input.dest || "").trim().toUpperCase();
+  if (dest && !/^[A-Z]{3}$/.test(dest)) throw new ValidationError(`Ukjent destinasjon: ${dest}`);
+  return { from, want, flex, region, dest, cabins, pax, partners: input.partners !== false, amex: Boolean(input.amex) };
 }
 
 /** The dates to search: `flex` days either side of the wanted date, never before today. */
@@ -61,7 +64,8 @@ export function filterAndPrice(trips, params, today) {
   for (const t of trips) {
     if (t.origin !== params.from) continue;
     if (t.date < start || t.date > end) continue;
-    if (params.region !== "all" && t.region && t.region !== params.region) continue;
+    if (params.dest) { if (t.dest !== params.dest) continue; }
+    else if (params.region !== "all" && t.region && t.region !== params.region) continue;
     if (!params.cabins.includes(t.cabin)) continue;
     const sas = isSasOperated(t);
     if (!params.partners && !sas) continue;
@@ -88,7 +92,7 @@ export async function runSearch(provider, rawParams, { today = todayIso(), cache
   const params = normalizeParams(rawParams);
   const { start, end } = dateWindow(params.want, params.flex, today);
   if (end < today) return { params, window: { start, end }, results: [], expired: true };
-  const query = { origin: params.from, region: params.region, cabins: params.cabins, start, end };
+  const query = { origin: params.from, region: params.region, dest: params.dest, cabins: params.cabins, start, end };
   const cacheKey = JSON.stringify(query);
   let trips = cache?.get(cacheKey);
   if (!trips) {
@@ -104,6 +108,7 @@ export const byPoints = (a, b) => (a.pointsTotal ?? Infinity) - (b.pointsTotal ?
 export function describeParams(p) {
   const cab = { business: "Business", premium: "Premium", economy: "Economy" };
   const parts = [
+    ...(p.dest ? [`til ${cityName(p.dest)}`] : []),
     p.cabins.map((c) => cab[c]).join(", "),
     `${p.pax} ${p.pax === 1 ? "person" : "personer"}`,
     `${formatDate(p.want)}${p.flex ? ` ± ${p.flex} dager` : ""}`,

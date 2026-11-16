@@ -78,6 +78,8 @@ Utvidelsen i `bonusjakt/extension/` søker direkte på sas.no gjennom Chrome, de
 
 **Slik søker den:** utvidelsen bruker SAS sin egen Award Finder på sas.no. Den viser ledige *bonusseter* (det Amex 2 for 1 gjelder for) per dag i Economy (Go), Premium (Plus) og Business, for alle SAS-destinasjoner i verdensdelen du velger. Poengprisen og skatten hentes fra bestillingssiden og huskes i en uke per rute. Award Finder viser bare SAS sine egne fly, ikke bonusseter hos partnere.
 
+Du kan søke i en hel verdensdel, eller velge én destinasjon i feltet «Til» (lista kommer fra SAS). Ledige seter vises med en gang, og poengprisen fylles inn rett etterpå. «Bestill i Award Finder» åpner Award Finder på sas.no for strekningen.
+
 Søket tar pauser mellom kallene og ber om omtrent det samme som når du klikker deg rundt selv. Ber SAS deg bekrefte at du er et menneske, stopper Bonusjakt og sier fra; den prøver aldri å komme rundt sjekken.
 
 ### Installer
@@ -87,15 +89,6 @@ Søket tar pauser mellom kallene og ber om omtrent det samme som når du klikker
 3. Slå på **Utviklermodus** øverst til høyre.
 4. Trykk **Last inn upakket** og velg mappen `bonusjakt/extension`.
 5. Fest Bonusjakt-ikonet i verktøylinjen (puslespillbrikken → nålen).
-
-### Ta opp et søk (for å gjøre SAS-koblingen ferdig)
-
-1. Åpne Bonusjakt, gå til **Datakilde** og slå på **Opptak**.
-2. Gå til sas.no, last siden på nytt (F5), logg inn med EuroBonus, og gjør ett vanlig bonussøk. Bla gjerne litt i datoene.
-3. Gå tilbake til Bonusjakt, slå av **Opptak**, og trykk **Last ned opptak**.
-4. Send fila til Claude.
-
-Navn, e-post, telefon, EuroBonus-nummer og innloggingsnøkler fjernes før noe lagres. Åpne gjerne fila og se gjennom den før du sender den.
 
 ### Varsler
 

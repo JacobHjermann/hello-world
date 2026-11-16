@@ -1,3 +1,5 @@
+import { price } from "./shared/search.js";
+
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => n.toLocaleString("nb-NO");
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -25,12 +27,36 @@ function toast(t) { const el = document.createElement("div"); el.className = "to
 const st = { region: "all", cabins: new Set(["business"]), pax: 2, partners: true, amex: false };
 let status = null;
 
-const params = () => ({ from: $("from").value, want: $("want").value, flex: Number($("flex").value), region: st.region, cabins: [...st.cabins], pax: st.pax, partners: st.partners, amex: st.amex });
+let destChoices = [];
+// "Tokyo (HND)" or "HND" → the destination; empty means the whole region.
+function chosenDest() {
+  const v = $("to").value.trim();
+  if (!v) return null;
+  const code = (v.match(/\(([A-Z]{3})\)\s*$/) || v.toUpperCase().match(/^([A-Z]{3})$/) || [])[1];
+  return destChoices.find((d) => d.code === code) || destChoices.find((d) => d.city.toLowerCase() === v.toLowerCase()) || null;
+}
+const params = () => ({ from: $("from").value, want: $("want").value, flex: Number($("flex").value), region: st.region, dest: chosenDest()?.code || "", cabins: [...st.cabins], pax: st.pax, partners: st.partners, amex: st.amex });
+
+async function loadDestinations() {
+  try {
+    destChoices = await call("destinations", { origin: $("from").value });
+    $("to-list").innerHTML = destChoices.map((d) => `<option value="${esc(d.city)} (${d.code})">${esc(d.airport)}${d.country ? ", " + esc(d.country) : ""}</option>`).join("");
+  } catch { destChoices = []; }
+}
+$("from").addEventListener("change", () => { $("to").value = ""; loadDestinations(); });
+// Picking a destination shows its region's picture and selects that region.
+$("to").addEventListener("change", () => {
+  const d = chosenDest();
+  if ($("to").value.trim() && !d) { toast("Fant ikke den destinasjonen i SAS sin liste. Velg fra lista som dukker opp når du skriver."); return; }
+  if (d?.region) $("regions").querySelector(`[data-v="${d.region}"]`)?.click();
+});
 const setPax = (n) => { st.pax = Math.max(1, Math.min(9, n)); $("paxv").textContent = st.pax; };
 
 // ---------- Filters ----------
 $("regions").addEventListener("click", (e) => {
   const b = e.target.closest(".chip"); if (!b) return;
+  // Clicking another region than the chosen destination's means "search the region".
+  if (e.isTrusted && chosenDest() && chosenDest().region !== b.dataset.v) $("to").value = "";
   st.region = b.dataset.v;
   $("regions").querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", c === b));
   document.querySelectorAll(".scene").forEach((sc) => sc.classList.toggle("on", sc.dataset.scene === st.region));
@@ -59,12 +85,36 @@ $("search").addEventListener("submit", async (e) => {
   $("results-head").hidden = false;
   try {
     const data = await call("search", { params: params() });
-    render(data.results, data.expired);
+    lastResults = data.results;
+    render(lastResults, data.expired);
+    fillPrices(lastResults);
   } catch (err) {
     $("count").textContent = "Søket feilet";
     $("list").innerHTML = `<div class="empty">${esc(err.message)}</div>`;
   } finally { btn.disabled = false; btn.textContent = "Søk nå"; }
 });
+
+let lastResults = [];
+
+// Look up points for the results that don't have them yet, then show them.
+async function fillPrices(results) {
+  const missing = results.filter((r) => r.pointsTotal == null);
+  if (!missing.length) return;
+  const routes = [...new Map(missing.map((r) => [`${r.origin}-${r.dest}`, { origin: r.origin, dest: r.dest, date: r.date }])).values()];
+  $("count").dataset.extra = " · henter poengpriser …"; $("count").textContent += $("count").dataset.extra;
+  let prices = {};
+  try { prices = await call("prices", { routes }); } catch { /* shown as not found below */ }
+  if (results !== lastResults) return; // a newer search has started
+  for (const r of results) {
+    if (r.pointsTotal != null) continue;
+    const p = prices[`${r.origin}-${r.dest}`]?.[r.cabin];
+    if (p) Object.assign(r, { pts: p.pts, taxes: p.taxes, taxCurrency: p.currency }, price({ ...r, pts: p.pts, taxes: p.taxes }, { pax: st.pax, amex: st.amex }));
+    else r.priceMissing = true;
+  }
+  render(results);
+}
+
+const awardFinderUrl = (f) => `https://www.sas.no/award-finder?origin=${encodeURIComponent(f.origin)}&destination=${encodeURIComponent(f.dest)}`;
 
 function render(list, expired) {
   list.sort((a, b) => (a.pointsTotal ?? Infinity) - (b.pointsTotal ?? Infinity));
@@ -87,10 +137,10 @@ function render(list, expired) {
         <div class="tags"><span class="tag ${cls}">${CABNAME[f.cabin]}</span><span class="tag ${f.sasOperated ? "" : "partner"}">${esc(f.airlineNames.join(" / "))}</span>
           <span class="tag off">${off}</span>${f.amexApplied ? '<span class="tag amex">Amex 2 for 1</span>' : ""}</div></div>
       <div class="price">${f.pointsTotal == null
-        ? `<div class="pts"><small>Poengpris hentes ved neste søk</small></div><div class="sub">${f.amexApplied ? "Amex 2 for 1 gjelder · " : ""}se prisen på sas.no</div>`
+        ? `<div class="pts"><small>${f.priceMissing ? "Fant ikke poengprisen" : "Henter poengpris …"}</small></div><div class="sub">${f.amexApplied ? "Amex 2 for 1 gjelder · " : ""}${f.priceMissing ? "se prisen i Award Finder" : ""}</div>`
         : `<div class="pts">${f.amexApplied ? `<span class="strike">${fmt(f.pointsWithoutAmex)}</span>` : ""}${fmt(f.pointsTotal)} <small>poeng</small></div>
         <div class="sub">${f.amexApplied ? `Én betaler ${fmt(f.pointsPerPerson)} p, én reiser gratis` : `${fmt(f.pointsPerPerson)} p per person`} + ${taxes}</div>`}
-        <div class="seats-row">${seats}<a class="book" href="https://www.sas.no/" target="_blank" rel="noopener">Bestill ↗</a></div></div>
+        <div class="seats-row">${seats}<a class="book" href="${awardFinderUrl(f)}" target="_blank" rel="noopener">Bestill i Award Finder ↗</a></div></div>
     </article>`;
   }).join("");
 }
@@ -113,7 +163,7 @@ $("watches").addEventListener("click", async (e) => {
   try { await call("removeWatch", { id: del.dataset.del }); toast("Varselet er slettet."); await load(); } catch (err) { toast(err.message); }
 });
 $("save").onclick = async () => {
-  try { const w = await call("addWatch", { params: params() }); toast(`Varselet «${w.name}» er lagret.`); await load(); } catch (err) { toast(err.message); }
+  try { const w = await call("addWatch", { params: params(), destName: chosenDest()?.city }); toast(`Varselet «${w.name}» er lagret.`); await load(); } catch (err) { toast(err.message); }
 };
 $("runall").onclick = async () => {
   const b = $("runall"); b.disabled = true; b.textContent = "Kjører…";
@@ -151,27 +201,6 @@ $("diag").onclick = async () => {
   b.disabled = false; b.textContent = "Test SAS-koblingen";
 };
 
-// ---------- Recorder ----------
-$("recording").onchange = async (e) => { await call("setRecording", { on: e.target.checked }); toast(e.target.checked ? "Opptak er på. Last sas.no på nytt (F5) før du søker." : "Opptak er av."); };
-$("recclear").onclick = async () => { await call("clearRecordings"); await load(); toast("Opptaket er slettet."); };
-// The toolbar popup closes as soon as a download starts, so the download runs from a full tab.
-async function downloadRecordings() {
-  const { recordings } = await call("getRecordings");
-  if (!recordings.length) throw new Error("Ingenting er tatt opp ennå. Slå på opptak, last sas.no på nytt (F5) og gjør et bonussøk.");
-  const blob = new Blob([JSON.stringify({ version: chrome.runtime.getManifest().version, recordings }, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  await chrome.downloads.download({ url, filename: `bonusjakt-opptak-${new Date().toISOString().slice(0, 10)}.json` });
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
-  return recordings.length;
-}
-$("recdownload").onclick = async () => {
-  if (document.documentElement.classList.contains("popup")) {
-    chrome.tabs.create({ url: chrome.runtime.getURL("app.html?full&download") });
-    return;
-  }
-  try { toast(`Lastet ned ${await downloadRecordings()} svar. Fila ligger i Nedlastinger-mappen.`); } catch (err) { toast(err.message); }
-};
-
 // ---------- Load ----------
 async function load() {
   status = await call("status");
@@ -192,8 +221,6 @@ async function load() {
   $("ch-desktop").checked = s.channels.desktop; $("ch-telegram").checked = s.channels.telegram;
   if (document.activeElement !== $("tg-token")) $("tg-token").value = s.telegramToken;
   if (document.activeElement !== $("tg-chat")) $("tg-chat").value = s.telegramChatId;
-  $("recording").checked = status.recording;
-  $("reccount").textContent = `${status.recordingCount} ${status.recordingCount === 1 ? "svar" : "svar"} tatt opp`;
   renderWatches();
 }
 
@@ -201,13 +228,10 @@ async function load() {
   try {
     await load();
     $("from").innerHTML = Object.entries(status.origins).map(([code, city]) => `<option value="${code}">${esc(city)} (${code})</option>`).join("");
+    loadDestinations();
     $("want").min = status.today;
     $("want").value = addDays(status.today, 60);
     flexNote();
-    if (location.search.includes("download")) {
-      document.querySelector(".rec").scrollIntoView();
-      try { toast(`Lastet ned ${await downloadRecordings()} svar. Fila ligger i Nedlastinger-mappen.`); } catch (err) { toast(err.message); }
-    }
   } catch (err) {
     $("list").innerHTML = `<div class="empty">${esc(err.message)}</div>`;
   }

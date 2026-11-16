@@ -49,9 +49,21 @@ export const offersUrl = (origin, dest, date) =>
  * Destinations to ask about for a search. Only the region narrows it: the list's flightClasses
  * reflect where award seats are open right now, so filtering on them would miss seats that open later.
  */
-export function pickDestinations(destinations, { region }) {
+export function pickDestinations(destinations, { region, dest }) {
+  if (dest) return destinations.filter((d) => d.airportCode === dest);
   return destinations.filter((d) => region === "all" || regionOf(d) === region);
 }
+
+/** Destination list for the "Til" picker: code, city, airport, country and region, sorted by city. */
+export function destinationChoices(destinations) {
+  return destinations
+    .map((d) => ({ code: d.airportCode, city: d.cityName || d.airportName, airport: d.airportName, country: d.countryName, region: regionOf(d) }))
+    .sort((a, b) => a.city.localeCompare(b.city, "nb"));
+}
+
+/** Award Finder on sas.no for a route, where the user can see the seats and book. */
+export const awardFinderUrl = (origin, dest) =>
+  `${SAS_BASE}/award-finder?origin=${encodeURIComponent(origin)}${dest ? `&destination=${encodeURIComponent(dest)}` : ""}`;
 
 /** Award seats per day and class from an Award Finder availability answer, as Bonusjakt trips. */
 export function parseAvailability(items, { origin, start, end }) {
