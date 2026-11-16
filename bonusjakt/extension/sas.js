@@ -1,23 +1,23 @@
-// Searches flysas.com through the user's own browser session.
+// Searches sas.no through the user's own browser session.
 //
-// STATUS: not finished. How flysas.com asks for and returns award seats could not be seen while
+// STATUS: not finished. How sas.no asks for and returns award seats could not be seen while
 // building this (SAS blocks the build environment). The recorder in this extension captures one
 // real search; from that recording, `buildRequests` and `parseResponse` below get written.
 
 export class SasNotReadyError extends Error {}
 
-const SAS_ORIGIN = "https://www.flysas.com";
+const SAS_ORIGIN = "https://www.sas.no";
 const PAUSE_MS = 4000; // Pause between requests so the search looks like a person clicking, and stays light.
 
 /**
- * Run `fetch` inside a flysas.com tab, so the request carries the user's own cookies and login,
+ * Run `fetch` inside a sas.no tab, so the request carries the user's own cookies and login,
  * exactly as when they search on the site themselves. Opens a background tab if none is open.
  */
 export async function sasFetch(url, init = {}) {
   let [tab] = await chrome.tabs.query({ url: `${SAS_ORIGIN}/*` });
   let opened = false;
   if (!tab) {
-    tab = await chrome.tabs.create({ url: `${SAS_ORIGIN}/no-no/`, active: false });
+    tab = await chrome.tabs.create({ url: `${SAS_ORIGIN}/`, active: false });
     opened = true;
     await waitForLoad(tab.id);
   }
@@ -31,7 +31,7 @@ export async function sasFetch(url, init = {}) {
         return { status: res.status, ok: res.ok, text: await res.text() };
       },
     });
-    if (result.status === 403) throw new Error("SAS avviste søket (403). Åpne flysas.com og sjekk at du ikke må bekrefte at du er et menneske.");
+    if (result.status === 403) throw new Error("SAS avviste søket (403). Åpne sas.no og sjekk at du ikke må bekrefte at du er et menneske.");
     if (!result.ok) throw new Error(`SAS svarte med feil ${result.status}.`);
     return JSON.parse(result.text);
   } finally {
@@ -54,7 +54,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 /** Which requests to send for one search. Written from the recorded search. */
 // eslint-disable-next-line no-unused-vars
 function buildRequests(query) {
-  throw new SasNotReadyError("SAS-koblingen er ikke ferdig ennå. Ta opp ett bonussøk på flysas.com (se «Datakilde» i Bonusjakt) og send opptaket til Claude.");
+  throw new SasNotReadyError("SAS-koblingen er ikke ferdig ennå. Ta opp ett bonussøk på sas.no (se «Datakilde» i Bonusjakt) og send opptaket til Claude.");
 }
 
 /** Turn one SAS response into trips in the shared format (see src/providers/demo.js). */
@@ -65,7 +65,7 @@ function parseResponse(json, query) {
 
 export function createSasProvider() {
   return {
-    name: "flysas.com",
+    name: "sas.no",
     live: true,
     async fetchTrips(query) {
       const trips = [];

@@ -20,8 +20,8 @@ export function buildAlertMessage(watch, hits, publicUrl = "") {
   const subject = `Bonusjakt: ${hits.length} ${hits.length === 1 ? "ledig reise" : "ledige reiser"} – ${watch.name}`;
   const more = hits.length > top.length ? `\n…og ${hits.length - top.length} til.` : "";
   const link = publicUrl ? `\n\nSe alle: ${publicUrl}` : "";
-  const text = `Nye ledige bonusreiser for varselet «${watch.name}»:\n\n${top.map((t) => "• " + tripLine(t)).join("\n")}${more}\n\nBestill på flysas.com før setene forsvinner.${link}`;
+  const text = `Nye ledige bonusreiser for varselet «${watch.name}»:\n\n${top.map((t) => "• " + tripLine(t)).join("\n")}${more}\n\nBestill på sas.no før setene forsvinner.${link}`;
   const first = top[0];
-  const short = `Bonusjakt: ${tripLine(first)}${hits.length > 1 ? ` (+${hits.length - 1} til)` : ""} Bestill på flysas.com.`;
+  const short = `Bonusjakt: ${tripLine(first)}${hits.length > 1 ? ` (+${hits.length - 1} til)` : ""} Bestill på sas.no.`;
   return { subject, text, short };
 }

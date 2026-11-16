@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Bonusjakt",
-  "version": "0.1.2",
-  "description": "Søker etter ledige EuroBonus-bonusreiser på flysas.com hver tredje time og varsler deg når noe blir ledig.",
+  "version": "0.1.3",
+  "description": "Søker etter ledige EuroBonus-bonusreiser på sas.no hver tredje time og varsler deg når noe blir ledig.",
   "minimum_chrome_version": "111",
   "icons": {
     "16": "icons/icon16.png",
@@ -29,13 +29,19 @@
     "unlimitedStorage"
   ],
   "host_permissions": [
+    "https://*.sas.no/*",
     "https://*.flysas.com/*",
+    "https://*.sas.se/*",
+    "https://*.sas.dk/*",
     "https://api.telegram.org/*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://*.flysas.com/*"
+        "https://*.sas.no/*",
+        "https://*.flysas.com/*",
+        "https://*.sas.se/*",
+        "https://*.sas.dk/*"
       ],
       "js": [
         "recorder-main.js"
@@ -46,7 +52,10 @@
     },
     {
       "matches": [
-        "https://*.flysas.com/*"
+        "https://*.sas.no/*",
+        "https://*.flysas.com/*",
+        "https://*.sas.se/*",
+        "https://*.sas.dk/*"
       ],
       "js": [
         "recorder-bridge.js"

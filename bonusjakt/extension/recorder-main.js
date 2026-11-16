@@ -1,10 +1,10 @@
-// Runs inside flysas.com and passes on what the site itself loads while you search: data answers
+// Runs inside sas.no (and other SAS sites) and passes on what the site itself loads while you search: data answers
 // (JSON and Next.js "x-component" text), page changes, and the data Next.js embeds in result pages.
 // Nothing is sent anywhere: the extension only stores it locally, and only while recording is on.
 (() => {
   const TAG = "__bonusjakt_rec";
   // Skip tracking, analytics and static files; keep everything else that is text.
-  const SKIP = /(analytics|collect|beacon|telemetry|tracking|optimizely|adobe|google|doubleclick|newrelic|datadog|sentry|hotjar|cookie|consent|\.(js|css|png|jpe?g|svg|webp|gif|woff2?|ico)(\?|$))/i;
+  const SKIP = /(cdn-cgi|challenge|analytics|collect|beacon|telemetry|tracking|optimizely|adobe|google|doubleclick|newrelic|datadog|sentry|hotjar|cookie|consent|\.(js|css|png|jpe?g|svg|webp|gif|woff2?|ico)(\?|$))/i;
   const TEXT = /(json|x-component|text\/plain|text\/x-|ndjson|event-stream)/i;
   const KEEP_HEADERS = /^(content-type|accept|next-action|next-router-state-tree|rsc|next-url|x-requested-with)$/i;
   const MAX = 400000;

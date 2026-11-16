@@ -74,7 +74,7 @@ Hvis en kjøring feiler (for eksempel feil API-nøkkel), blir den rød, og GitHu
 
 ## Chrome-utvidelse (søker på flysas.com med din egen innlogging)
 
-Utvidelsen i `bonusjakt/extension/` søker direkte på flysas.com gjennom Chrome, der du allerede er logget inn. Den trenger ingen server eller seats.aero, men virker bare mens PC-en står på og Chrome er åpen.
+Utvidelsen i `bonusjakt/extension/` søker direkte på sas.no gjennom Chrome, der du allerede er logget inn. Den trenger ingen server eller seats.aero, men virker bare mens PC-en står på og Chrome er åpen.
 
 **Status:** alt er klart unntatt selve lesingen av svarene fra SAS. Den skrives når Claude har fått et opptak av ett bonussøk. Til da viser utvidelsen eksempeldata.
 
@@ -89,7 +89,7 @@ Utvidelsen i `bonusjakt/extension/` søker direkte på flysas.com gjennom Chrome
 ### Ta opp et søk (for å gjøre SAS-koblingen ferdig)
 
 1. Åpne Bonusjakt, gå til **Datakilde** og slå på **Opptak**.
-2. Gå til flysas.com, logg inn med EuroBonus, og gjør ett vanlig bonussøk. Bla gjerne litt i datoene.
+2. Gå til sas.no, last siden på nytt (F5), logg inn med EuroBonus, og gjør ett vanlig bonussøk. Bla gjerne litt i datoene.
 3. Gå tilbake til Bonusjakt, slå av **Opptak**, og trykk **Last ned opptak**.
 4. Send fila til Claude.
 

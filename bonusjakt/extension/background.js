@@ -36,7 +36,7 @@ const notifier = {
   },
 };
 chrome.notifications.onClicked.addListener((id) => {
-  chrome.tabs.create({ url: "https://www.flysas.com/no-no/" });
+  chrome.tabs.create({ url: "https://www.sas.no/" });
   chrome.notifications.clear(id);
 });
 

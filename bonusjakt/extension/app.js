@@ -86,7 +86,7 @@ function render(list, expired) {
           <span class="tag off">${off}</span>${f.amexApplied ? '<span class="tag amex">Amex 2 for 1</span>' : ""}</div></div>
       <div class="price"><div class="pts">${f.amexApplied ? `<span class="strike">${fmt(f.pointsWithoutAmex)}</span>` : ""}${fmt(f.pointsTotal)} <small>poeng</small></div>
         <div class="sub">${f.amexApplied ? `Én betaler ${fmt(f.pointsPerPerson)} p, én reiser gratis` : `${fmt(f.pointsPerPerson)} p per person`} + ${taxes}</div>
-        <div class="seats-row">${seats}<a class="book" href="https://www.flysas.com/no-no/" target="_blank" rel="noopener">Bestill ↗</a></div></div>
+        <div class="seats-row">${seats}<a class="book" href="https://www.sas.no/" target="_blank" rel="noopener">Bestill ↗</a></div></div>
     </article>`;
   }).join("");
 }
@@ -140,12 +140,12 @@ $("testnotify").onclick = async () => {
 $("demo").onchange = async (e) => { await call("saveSettings", { patch: { demo: e.target.checked } }); await load(); };
 
 // ---------- Recorder ----------
-$("recording").onchange = async (e) => { await call("setRecording", { on: e.target.checked }); toast(e.target.checked ? "Opptak er på. Last flysas.com på nytt (F5) før du søker." : "Opptak er av."); };
+$("recording").onchange = async (e) => { await call("setRecording", { on: e.target.checked }); toast(e.target.checked ? "Opptak er på. Last sas.no på nytt (F5) før du søker." : "Opptak er av."); };
 $("recclear").onclick = async () => { await call("clearRecordings"); await load(); toast("Opptaket er slettet."); };
 // The toolbar popup closes as soon as a download starts, so the download runs from a full tab.
 async function downloadRecordings() {
   const { recordings } = await call("getRecordings");
-  if (!recordings.length) throw new Error("Ingenting er tatt opp ennå. Slå på opptak, last flysas.com på nytt (F5) og gjør et bonussøk.");
+  if (!recordings.length) throw new Error("Ingenting er tatt opp ennå. Slå på opptak, last sas.no på nytt (F5) og gjør et bonussøk.");
   const blob = new Blob([JSON.stringify({ version: chrome.runtime.getManifest().version, recordings }, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   await chrome.downloads.download({ url, filename: `bonusjakt-opptak-${new Date().toISOString().slice(0, 10)}.json` });
@@ -164,7 +164,7 @@ $("recdownload").onclick = async () => {
 async function load() {
   status = await call("status");
   const s = status.settings;
-  $("mode").textContent = s.demo ? "Eksempeldata" : "flysas.com";
+  $("mode").textContent = s.demo ? "Eksempeldata" : "sas.no";
   $("last").textContent = timeLabel(status.runs.lastRun);
   $("next").textContent = status.nextRun ? timeLabel(status.nextRun) : "–";
   $("dot").classList.toggle("bad", Boolean(status.runs.lastError));
@@ -174,7 +174,7 @@ async function load() {
   else if (s.demo) { banner.hidden = false; banner.className = "banner"; banner.textContent = "Viser eksempeldata. SAS-koblingen blir ferdig når Claude har fått et opptak av ett bonussøk (se «Datakilde» nederst)."; }
   else banner.hidden = true;
   $("demo").checked = s.demo;
-  $("source-text").textContent = s.demo ? "Akkurat nå brukes oppdiktede eksempelreiser, så du kan prøve alt." : "Søker på flysas.com gjennom din egen innlogging i Chrome.";
+  $("source-text").textContent = s.demo ? "Akkurat nå brukes oppdiktede eksempelreiser, så du kan prøve alt." : "Søker på sas.no gjennom din egen innlogging i Chrome.";
   $("ch-desktop").checked = s.channels.desktop; $("ch-telegram").checked = s.channels.telegram;
   if (document.activeElement !== $("tg-token")) $("tg-token").value = s.telegramToken;
   if (document.activeElement !== $("tg-chat")) $("tg-chat").value = s.telegramChatId;
