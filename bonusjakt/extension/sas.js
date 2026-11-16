@@ -64,11 +64,17 @@ export async function sasFetch(url) {
 /** Two small test requests, for the "Test SAS-koblingen" button. */
 export async function diagnose() {
   const lines = [];
-  for (const url of [destinationsUrl("OSL"), destinationsUrl("OSL", ["HND"], { availability: true })]) {
+  const tests = [
+    destinationsUrl("OSL"),
+    destinationsUrl("OSL", ["HND"], { availability: true }),
+    destinationsUrl("OSL", ["HND", "ICN"], { availability: true }),
+    offersUrl("OSL", "HND", new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10)),
+  ];
+  for (const url of tests) {
     const r = await sasRaw(url);
     let count = "";
     try { const j = JSON.parse(r.text); count = Array.isArray(j) ? ` (${j.length} destinasjoner)` : ""; } catch { /* not JSON */ }
-    lines.push(`Fane: ${r.tabPath}\n${describe(url, r)}${count}`);
+    lines.push(`${describe(url, r)}${count}${url.includes(",") ? "  [flere destinasjoner]" : ""}`);
     await sleep(PAUSE_MS);
   }
   return lines.join("\n\n");
@@ -96,15 +102,26 @@ export function createSasProvider({ fetchJson = sasFetch } = {}) {
   let calls = 0;
   const get = async (url) => { if (calls++) await sleep(PAUSE_MS); return fetchJson(url); };
 
+  let listsWork = true; // Does SAS accept several destinations in one request? Assume yes until it fails.
+
+  async function oneByOne(origin, codes) {
+    const all = [];
+    for (const c of codes) all.push(...(await get(destinationsUrl(origin, [c], { availability: true }))));
+    return all;
+  }
+
   async function availability(origin, codes) {
-    const res = await get(destinationsUrl(origin, codes, { availability: true }));
-    // If SAS answers with exactly one destination when asked for several, it does not take a list:
-    // ask one at a time instead. (An empty answer just means no seats.)
-    if (codes.length > 1 && Array.isArray(res) && res.length === 1) {
-      const all = [];
-      for (const c of codes) all.push(...(await get(destinationsUrl(origin, [c], { availability: true }))));
-      return all;
+    if (codes.length === 1 || !listsWork) return oneByOne(origin, codes);
+    let res;
+    try {
+      res = await get(destinationsUrl(origin, codes, { availability: true }));
+    } catch (err) {
+      // A list request that fails (but SAS answers single ones) means lists aren't supported.
+      listsWork = false;
+      return oneByOne(origin, codes);
     }
+    // Exactly one destination back when asking for several also means no list support.
+    if (Array.isArray(res) && res.length === 1) { listsWork = false; return oneByOne(origin, codes); }
     return res;
   }
 
@@ -121,9 +138,8 @@ export function createSasProvider({ fetchJson = sasFetch } = {}) {
       try {
         const prices = parseAwardPrices(await get(offersUrl(t.origin, t.dest, t.date)));
         if (Object.keys(prices).length) sasPrices[route] = { at: Date.now(), prices };
-      } catch (err) {
-        if (err instanceof SasBlockedError) throw err;
-        // A missing price is not fatal: the seat is shown with "poengpris på sas.no".
+      } catch {
+        // A missing price never stops the search: the seat is shown with "se prisen på sas.no".
       }
     }
     await chrome.storage.local.set({ sasPrices });
