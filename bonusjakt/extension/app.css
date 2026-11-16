@@ -21,3 +21,5 @@ html:not(.popup) .openfull{display:none}
 input[type=password]{font:inherit;color:var(--fg);background:var(--surface-2);border:1px solid transparent;border-radius:10px;padding:10px 12px;width:100%;min-width:0}
 .rec .btn.ghost{background:var(--surface);border:1px solid var(--line)}
 .diag{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:12px;background:var(--surface-2);border-radius:10px;padding:12px;margin:0}
+.rec summary{cursor:pointer;font-weight:600}
+.rec[open]{display:grid;gap:10px}

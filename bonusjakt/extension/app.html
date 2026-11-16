@@ -128,6 +128,20 @@
       <button class="btn ghost" type="button" id="diag">Test SAS-koblingen</button>
     </div>
     <pre class="diag" id="diag-out" hidden></pre>
+    <details class="rec" id="rec-box">
+      <summary>Ta opp et partnersøk (midlertidig)</summary>
+      <ol>
+        <li>Slå på opptak under.</li>
+        <li>Gå til <b>sas.no</b>, trykk <b>F5</b>, og søk etter en bonusreise <b>med en partner</b>, for eksempel Oslo–Amsterdam med KLM eller Oslo–Atlanta med Delta. Gå så langt at du ser fly med poengpriser.</li>
+        <li>Kom tilbake hit, slå av opptak og trykk «Last ned opptak». Send fila til Claude, og si hvilken nettadresse du var på da du så partnerflyene.</li>
+      </ol>
+      <label class="switch"><input type="checkbox" id="recording"><span class="knob"></span><span class="sw-text">Opptak<small id="reccount">0 svar tatt opp</small></span></label>
+      <div class="btns">
+        <button class="btn ghost" type="button" id="recdownload">Last ned opptak</button>
+        <button class="btn ghost" type="button" id="recclear">Slett opptak</button>
+      </div>
+      <small class="ch-note">Profil-, innloggings- og betalingssider tas ikke opp. Navn, e-post, telefon, adresse og EuroBonus-nummer fjernes før noe lagres. Opptaket ligger bare i din nettleser til du laster det ned.</small>
+    </details>
   </section>
   <p class="note">Bonusjakt bestiller ingenting. Sjekk alltid prisen på sas.no før du bestiller. Amex 2 for 1 regnes bare på fly SAS selv flyr.</p>
 </main>
