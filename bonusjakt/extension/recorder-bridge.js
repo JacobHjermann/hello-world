@@ -3,6 +3,6 @@ window.addEventListener("message", async (e) => {
   if (e.source !== window || !e.data || !e.data.__bonusjakt_rec) return;
   const { recording } = await chrome.storage.local.get("recording");
   if (!recording) return;
-  const { url, method, body, status, response } = e.data;
-  chrome.runtime.sendMessage({ type: "recorded", entry: { url, method, body, status, response, at: new Date().toISOString() } });
+  const { kind, url, method, headers, contentType, body, status, response } = e.data;
+  chrome.runtime.sendMessage({ type: "recorded", entry: { kind, url, method, headers, contentType, body, status, response, at: new Date().toISOString() } });
 });

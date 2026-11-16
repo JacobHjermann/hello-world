@@ -8,7 +8,8 @@ import { redactEntry } from "./redact.js";
 
 const ALARM = "bonusjakt";
 const INTERVAL_MIN = 180;
-const MAX_RECORDINGS = 60;
+const MAX_RECORDINGS = 150;
+let recordQueue = Promise.resolve();
 
 // ---------- Notifications (desktop + optional Telegram) ----------
 const notifier = {
@@ -114,12 +115,16 @@ const handlers = {
     return { results };
   },
   async setRecording({ on }) { await chrome.storage.local.set({ recording: Boolean(on) }); return { ok: true }; },
-  async recorded({ entry }) {
-    const { recording, recordings = [] } = await chrome.storage.local.get(["recording", "recordings"]);
-    if (!recording) return { ok: false };
-    recordings.push(redactEntry(entry));
-    await chrome.storage.local.set({ recordings: recordings.slice(-MAX_RECORDINGS) });
-    return { ok: true };
+  // Answers arrive in bursts; saving them one at a time keeps any from being lost.
+  recorded({ entry }) {
+    recordQueue = recordQueue.then(async () => {
+      const { recording, recordings = [] } = await chrome.storage.local.get(["recording", "recordings"]);
+      if (!recording) return { ok: false };
+      recordings.push(redactEntry(entry));
+      await chrome.storage.local.set({ recordings: recordings.slice(-MAX_RECORDINGS) });
+      return { ok: true };
+    }).catch(() => ({ ok: false }));
+    return recordQueue;
   },
   async getRecordings() { const { recordings = [] } = await chrome.storage.local.get("recordings"); return { recordings }; },
   async clearRecordings() { await chrome.storage.local.set({ recordings: [] }); return { ok: true }; },
