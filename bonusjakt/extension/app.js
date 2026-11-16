@@ -67,7 +67,7 @@ $("search").addEventListener("submit", async (e) => {
 });
 
 function render(list, expired) {
-  list.sort((a, b) => a.pointsTotal - b.pointsTotal);
+  list.sort((a, b) => (a.pointsTotal ?? Infinity) - (b.pointsTotal ?? Infinity));
   $("count").textContent = `${list.length} ${list.length === 1 ? "ledig bonusreise" : "ledige bonusreiser"} for ${st.pax} ${st.pax === 1 ? "person" : "personer"}`;
   if (!list.length) {
     $("list").innerHTML = `<div class="empty">${expired ? "Datoen har passert." : "Ingen ledige seter med disse filtrene akkurat nå. Lagre søket som varsel, så sier vi fra når noe dukker opp."}</div>`;
@@ -76,7 +76,9 @@ function render(list, expired) {
   $("list").innerHTML = list.slice(0, 60).map((f) => {
     const cls = f.cabin === "business" ? "biz" : f.cabin === "premium" ? "prem" : "";
     const off = f.daysFromWanted === 0 ? "Ønsket dato" : `${Math.abs(f.daysFromWanted)} ${Math.abs(f.daysFromWanted) === 1 ? "dag" : "dager"} ${f.daysFromWanted < 0 ? "før" : "etter"}`;
-    const seats = f.seatsUnknown ? `<span class="seats unk">Antall seter ukjent</span>` : `<span class="seats ${f.seats <= st.pax + 1 ? "low" : "ok"}">${f.seats} ${f.seats === 1 ? "sete" : "seter"} ledig</span>`;
+    // SAS's Award Finder caps the count at 10, so 10 means "10 or more".
+    const n = f.source === "sas.no" && f.seats >= 10 ? "10+" : f.seats;
+    const seats = f.seatsUnknown ? `<span class="seats unk">Antall seter ukjent</span>` : `<span class="seats ${f.seats <= st.pax + 1 ? "low" : "ok"}">${n} ${f.seats === 1 ? "sete" : "seter"} ledig</span>`;
     const taxes = f.taxesTotal == null ? "skatter ukjent" : `${fmt(f.taxesTotal)} ${esc(f.taxCurrency || "")} i skatter`;
     return `<article class="card">
       <div class="route"><div><div class="iata">${esc(f.origin)}</div><div class="city">${esc(f.originCity)}</div></div>
@@ -84,8 +86,10 @@ function render(list, expired) {
       <div class="meta"><div>${dLabel(f.date)} ${f.date.slice(0, 4)}${f.direct === true ? " · Direkte" : f.direct === false ? " · Med stopp" : ""}</div>
         <div class="tags"><span class="tag ${cls}">${CABNAME[f.cabin]}</span><span class="tag ${f.sasOperated ? "" : "partner"}">${esc(f.airlineNames.join(" / "))}</span>
           <span class="tag off">${off}</span>${f.amexApplied ? '<span class="tag amex">Amex 2 for 1</span>' : ""}</div></div>
-      <div class="price"><div class="pts">${f.amexApplied ? `<span class="strike">${fmt(f.pointsWithoutAmex)}</span>` : ""}${fmt(f.pointsTotal)} <small>poeng</small></div>
-        <div class="sub">${f.amexApplied ? `Én betaler ${fmt(f.pointsPerPerson)} p, én reiser gratis` : `${fmt(f.pointsPerPerson)} p per person`} + ${taxes}</div>
+      <div class="price">${f.pointsTotal == null
+        ? `<div class="pts"><small>Poengpris hentes ved neste søk</small></div><div class="sub">${f.amexApplied ? "Amex 2 for 1 gjelder · " : ""}se prisen på sas.no</div>`
+        : `<div class="pts">${f.amexApplied ? `<span class="strike">${fmt(f.pointsWithoutAmex)}</span>` : ""}${fmt(f.pointsTotal)} <small>poeng</small></div>
+        <div class="sub">${f.amexApplied ? `Én betaler ${fmt(f.pointsPerPerson)} p, én reiser gratis` : `${fmt(f.pointsPerPerson)} p per person`} + ${taxes}</div>`}
         <div class="seats-row">${seats}<a class="book" href="https://www.sas.no/" target="_blank" rel="noopener">Bestill ↗</a></div></div>
     </article>`;
   }).join("");
@@ -171,10 +175,12 @@ async function load() {
   $("autostate").textContent = status.runs.lastError ? "Siste søk feilet" : "Automatisk søk er på";
   const banner = $("banner");
   if (status.runs.lastError) { banner.hidden = false; banner.className = "banner bad"; banner.textContent = status.runs.lastError; }
-  else if (s.demo) { banner.hidden = false; banner.className = "banner"; banner.textContent = "Viser eksempeldata. SAS-koblingen blir ferdig når Claude har fått et opptak av ett bonussøk (se «Datakilde» nederst)."; }
+  else if (s.demo) { banner.hidden = false; banner.className = "banner"; banner.textContent = "Viser eksempeldata. Slå av «Bruk eksempeldata» under «Datakilde» nederst for å søke på sas.no."; }
   else banner.hidden = true;
   $("demo").checked = s.demo;
-  $("source-text").textContent = s.demo ? "Akkurat nå brukes oppdiktede eksempelreiser, så du kan prøve alt." : "Søker på sas.no gjennom din egen innlogging i Chrome.";
+  $("source-text").textContent = s.demo
+    ? "Akkurat nå brukes oppdiktede eksempelreiser, så du kan prøve alt."
+    : "Søker etter bonusseter i SAS Award Finder på sas.no, gjennom din egen innlogging i Chrome. Award Finder viser SAS sine egne fly; bonusseter hos partnere er ikke med.";
   $("ch-desktop").checked = s.channels.desktop; $("ch-telegram").checked = s.channels.telegram;
   if (document.activeElement !== $("tg-token")) $("tg-token").value = s.telegramToken;
   if (document.activeElement !== $("tg-chat")) $("tg-chat").value = s.telegramChatId;

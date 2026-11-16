@@ -43,11 +43,13 @@ export const isSasOperated = (trip) => trip.airlines.length > 0 && trip.airlines
  */
 export function price(trip, { pax, amex }) {
   const amexApplied = Boolean(amex) && pax >= 2 && isSasOperated(trip);
+  // Points can be unknown (null) until the price has been looked up; the seat is still worth showing.
+  const known = trip.pts != null;
   return {
     amexApplied,
-    pointsPerPerson: trip.pts,
-    pointsTotal: trip.pts * (amexApplied ? pax - 1 : pax),
-    pointsWithoutAmex: trip.pts * pax,
+    pointsPerPerson: known ? trip.pts : null,
+    pointsTotal: known ? trip.pts * (amexApplied ? pax - 1 : pax) : null,
+    pointsWithoutAmex: known ? trip.pts * pax : null,
     taxesTotal: trip.taxes == null ? null : trip.taxes * pax,
   };
 }
@@ -68,7 +70,7 @@ export function filterAndPrice(trips, params, today) {
     seen.add(t.key);
     results.push({
       ...t,
-      destCity: cityName(t.dest),
+      destCity: t.destName || cityName(t.dest),
       originCity: cityName(t.origin),
       airlineNames: t.airlines.map(airlineName),
       sasOperated: sas,
@@ -77,7 +79,7 @@ export function filterAndPrice(trips, params, today) {
       ...price(t, params),
     });
   }
-  results.sort((a, b) => a.pointsTotal - b.pointsTotal || Math.abs(a.daysFromWanted) - Math.abs(b.daysFromWanted));
+  results.sort((a, b) => byPoints(a, b) || Math.abs(a.daysFromWanted) - Math.abs(b.daysFromWanted));
   return { window: { start, end }, results };
 }
 
@@ -95,6 +97,9 @@ export async function runSearch(provider, rawParams, { today = todayIso(), cache
   }
   return { params, ...filterAndPrice(trips, params, today) };
 }
+
+/** Cheapest first; trips without a known price last. */
+export const byPoints = (a, b) => (a.pointsTotal ?? Infinity) - (b.pointsTotal ?? Infinity);
 
 export function describeParams(p) {
   const cab = { business: "Business", premium: "Premium", economy: "Economy" };

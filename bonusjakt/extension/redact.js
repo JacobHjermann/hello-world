@@ -1,8 +1,8 @@
 // Removes personal details from a recorded SAS answer before it is stored or shared.
 // Keeps the structure (field names, airport codes, dates, points) that is needed to read award seats.
 
-const SECRET_PARAM = /(token|auth|session|sid|key|sig|code|jwt|nonce)/i;
-const PERSONAL_KEY = /^((first|last|given|family|full|middle|sur)_?name|name|e-?mail|phone|mobile|tel|address|street|zip|postal|birth|dob|gender|title|eurobonus.*(id|number|no)|member.*(id|number|no)|membership.*|customer.*(id|number)|loyalty.*(id|number)|frequentflyer.*|passport.*|password|token|access_?token|refresh_?token|id_?token|card.*|iban|ssn)$/i;
+const SECRET_PARAM = /(token|auth|session|sid|key|sig|code|jwt|nonce|frequentflyer|eurobonus|member|customer|checkout|crm|ebnumber)/i;
+const PERSONAL_KEY = /(Enc$|^crm|^sessionid$|^sub$|^ext.*name|addressline|zipcode|^address$|physical|^individual$|^consents?$|^preferences$|^engagements$)|^((first|last|given|family|full|middle|sur)_?name|name|e-?mail|phone|mobile|tel|address|street|zip|postal|birth|dob|gender|title|eurobonus.*(id|number|no)|member.*(id|number|no)|membership.*|customer.*(id|number)|loyalty.*(id|number)|frequentflyer.*|passport.*|password|token|access_?token|refresh_?token|id_?token|card.*|iban|ssn)$/i;
 const KEEP_HEADERS = /^(content-type|accept|next-action|next-router-state-tree|rsc|next-url|x-requested-with)$/i;
 
 // Patterns hidden in any text: e-mail, phone numbers, EuroBonus numbers, long digit runs and JWTs.
@@ -26,7 +26,8 @@ export function redactJson(value) {
   if (value && typeof value === "object") {
     const out = {};
     for (const [k, v] of Object.entries(value)) {
-      out[k] = PERSONAL_KEY.test(k) && (typeof v === "string" || typeof v === "number") ? "[skjult]" : redactJson(v);
+      // Whole personal blocks (address, consents, engagements…) are dropped, single fields masked.
+      out[k] = PERSONAL_KEY.test(k) ? "[skjult]" : redactJson(v);
     }
     return out;
   }

@@ -76,7 +76,9 @@ Hvis en kjøring feiler (for eksempel feil API-nøkkel), blir den rød, og GitHu
 
 Utvidelsen i `bonusjakt/extension/` søker direkte på sas.no gjennom Chrome, der du allerede er logget inn. Den trenger ingen server eller seats.aero, men virker bare mens PC-en står på og Chrome er åpen.
 
-**Status:** alt er klart unntatt selve lesingen av svarene fra SAS. Den skrives når Claude har fått et opptak av ett bonussøk. Til da viser utvidelsen eksempeldata.
+**Slik søker den:** utvidelsen bruker SAS sin egen Award Finder på sas.no. Den viser ledige *bonusseter* (det Amex 2 for 1 gjelder for) per dag i Economy (Go), Premium (Plus) og Business, for alle SAS-destinasjoner i verdensdelen du velger. Poengprisen og skatten hentes fra bestillingssiden og huskes i en uke per rute. Award Finder viser bare SAS sine egne fly, ikke bonusseter hos partnere.
+
+Søket tar pauser mellom kallene og ber om omtrent det samme som når du klikker deg rundt selv. Ber SAS deg bekrefte at du er et menneske, stopper Bonusjakt og sier fra; den prøver aldri å komme rundt sjekken.
 
 ### Installer
 

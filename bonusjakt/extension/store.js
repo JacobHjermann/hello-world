@@ -1,7 +1,7 @@
 // Same interface as src/store.js, but kept in chrome.storage.local so it survives browser restarts.
 const DEFAULTS = () => ({
   settings: {
-    demo: true,
+    demo: false,
     channels: { desktop: true, telegram: false },
     telegramToken: "",
     telegramChatId: "",

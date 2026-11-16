@@ -4,7 +4,8 @@
 (() => {
   const TAG = "__bonusjakt_rec";
   // Skip tracking, analytics and static files; keep everything else that is text.
-  const SKIP = /(cdn-cgi|challenge|analytics|collect|beacon|telemetry|tracking|optimizely|adobe|google|doubleclick|newrelic|datadog|sentry|hotjar|cookie|consent|\.(js|css|png|jpe?g|svg|webp|gif|woff2?|ico)(\?|$))/i;
+  // Never record pages about the member: profile, login, payment, saved travellers, own trips.
+  const SKIP = /(customer|profile|auth\/|login|session|checkout|payment|passengers\/saved|my-trips|travelers|campaigns|cdn-cgi|challenge|analytics|collect|beacon|telemetry|tracking|optimizely|adobe|google|doubleclick|newrelic|datadog|sentry|hotjar|cookie|consent|\.(js|css|png|jpe?g|svg|webp|gif|woff2?|ico)(\?|$))/i;
   const TEXT = /(json|x-component|text\/plain|text\/x-|ndjson|event-stream)/i;
   const KEEP_HEADERS = /^(content-type|accept|next-action|next-router-state-tree|rsc|next-url|x-requested-with)$/i;
   const MAX = 400000;

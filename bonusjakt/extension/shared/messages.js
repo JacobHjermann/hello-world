@@ -9,14 +9,16 @@ function offsetText(d) {
 }
 
 export function tripLine(t) {
-  const pts = `${fmt(t.pointsTotal)} poeng totalt${t.amexApplied ? " med Amex 2 for 1" : ""}`;
+  const pts = t.pointsTotal == null
+    ? `poengpris på sas.no${t.amexApplied ? " (Amex 2 for 1 gjelder)" : ""}`
+    : `${fmt(t.pointsTotal)} poeng totalt${t.amexApplied ? " med Amex 2 for 1" : ""}`;
   const seats = t.seatsUnknown ? "ukjent antall seter" : `${t.seats} ${t.seats === 1 ? "sete" : "seter"}`;
   return `${CAB[t.cabin]} ${t.origin} → ${t.dest} (${t.destCity}) ${formatDate(t.date)}, ${offsetText(t.daysFromWanted)}. ${t.airlineNames.join("/")}, ${seats}, ${pts}.`;
 }
 
 /** Build the e-mail, SMS and Telegram text for new trips found by one alert. */
 export function buildAlertMessage(watch, hits, publicUrl = "") {
-  const top = [...hits].sort((a, b) => a.pointsTotal - b.pointsTotal).slice(0, 8);
+  const top = [...hits].sort((a, b) => (a.pointsTotal ?? Infinity) - (b.pointsTotal ?? Infinity)).slice(0, 8);
   const subject = `Bonusjakt: ${hits.length} ${hits.length === 1 ? "ledig reise" : "ledige reiser"} – ${watch.name}`;
   const more = hits.length > top.length ? `\n…og ${hits.length - top.length} til.` : "";
   const link = publicUrl ? `\n\nSe alle: ${publicUrl}` : "";
