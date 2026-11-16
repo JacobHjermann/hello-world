@@ -15,7 +15,8 @@ const notifier = {
     const results = [];
     if (settings.channels.desktop) {
       try {
-        await chrome.notifications.create(`bj-${Date.now()}`, { type: "basic", iconUrl: "icons/icon128.png", title: msg.subject, message: msg.short.slice(0, 300), priority: 2 });
+        // requireInteraction keeps the notice on screen until it is clicked away.
+        await chrome.notifications.create(`bj-${Date.now()}`, { type: "basic", iconUrl: "icons/icon128.png", title: msg.subject, message: msg.short.slice(0, 300), priority: 2, requireInteraction: true });
         results.push({ channel: "desktop", ok: true });
       } catch (err) { results.push({ channel: "desktop", ok: false, error: err.message }); }
     }
