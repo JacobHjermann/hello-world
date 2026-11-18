@@ -24,7 +24,7 @@ async function call(type, payload = {}) {
 }
 function toast(t) { const el = document.createElement("div"); el.className = "toast"; el.setAttribute("role", "status"); el.textContent = t; document.body.append(el); setTimeout(() => el.remove(), 3600); }
 
-const st = { region: "all", cabins: new Set(["business"]), pax: 2, partners: true, amex: false };
+const st = { region: "all", cabins: new Set(["business"]), pax: 2, partners: true, amex: false, tripType: "round" };
 let status = null;
 
 let destChoices = [];
@@ -35,7 +35,18 @@ function chosenDest() {
   const code = (v.match(/\(([A-Z]{3})\)\s*$/) || v.toUpperCase().match(/^([A-Z]{3})$/) || [])[1];
   return destChoices.find((d) => d.code === code) || destChoices.find((d) => d.city.toLowerCase() === v.toLowerCase()) || null;
 }
-const params = () => ({ from: $("from").value, want: $("want").value, flex: Number($("flex").value), region: st.region, dest: chosenDest()?.code || "", cabins: [...st.cabins], pax: st.pax, partners: st.partners, amex: st.amex });
+const params = () => ({ from: $("from").value, tripType: st.tripType, want: $("want").value, back: $("back").value, flex: Number($("flex").value), region: st.region, dest: chosenDest()?.code || "", cabins: [...st.cabins], pax: st.pax, partners: st.partners, amex: st.amex });
+
+// ---------- Trip type: round trip, only out, only home ----------
+function setTripType(v) {
+  st.tripType = v;
+  $("triptype").querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", c.dataset.v === v));
+  $("want-field").hidden = v === "home";
+  $("back-field").hidden = v === "out";
+  $("to").placeholder = v === "home" ? "Hvor reiser du hjem fra? (alle i verdensdelen)" : "Alle i valgt verdensdel";
+  flexNote();
+}
+$("triptype").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) setTripType(b.dataset.v); });
 
 async function loadDestinations() {
   try {
@@ -71,11 +82,16 @@ $("minus").onclick = () => { setPax(st.pax - 1); if (st.pax < 2 && st.amex) { st
 $("plus").onclick = () => setPax(st.pax + 1);
 $("partners").onchange = (e) => { st.partners = e.target.checked; };
 $("amex").onchange = (e) => { st.amex = e.target.checked; if (st.amex && st.pax < 2) setPax(2); };
-["want", "flex"].forEach((id) => $(id).addEventListener("change", flexNote));
+["want", "back", "flex"].forEach((id) => $(id).addEventListener("change", flexNote));
+// Keep the return date after the outbound date.
+$("want").addEventListener("change", () => { if ($("back").value && $("back").value < $("want").value) $("back").value = addDays($("want").value, 14); flexNote(); });
 function flexNote() {
-  const want = $("want").value, fx = Number($("flex").value);
-  if (!want) return;
-  $("flexnote").innerHTML = fx ? `Søker fra <b>${dLabel(addDays(want, -fx))}</b> til <b>${dLabel(addDays(want, fx))}</b>.` : `Søker kun <b>${dLabel(want)}</b>.`;
+  const fx = Number($("flex").value);
+  const span = (d) => (fx ? `<b>${dLabel(addDays(d, -fx))}</b>–<b>${dLabel(addDays(d, fx))}</b>` : `<b>${dLabel(d)}</b>`);
+  const parts = [];
+  if (st.tripType !== "home" && $("want").value) parts.push(`ut ${span($("want").value)}`);
+  if (st.tripType !== "out" && $("back").value) parts.push(`hjem ${span($("back").value)}`);
+  $("flexnote").innerHTML = parts.length ? `Søker ${parts.join(", ")}.` : "";
 }
 
 // ---------- Search ----------
@@ -123,12 +139,30 @@ const bookLink = (f) => f.source === "sas.no partner"
 
 function render(list, expired) {
   list.sort((a, b) => (a.pointsTotal ?? Infinity) - (b.pointsTotal ?? Infinity));
-  $("count").textContent = `${list.length} ${list.length === 1 ? "ledig bonusreise" : "ledige bonusreiser"} for ${st.pax} ${st.pax === 1 ? "person" : "personer"}`;
+  const who = `for ${st.pax} ${st.pax === 1 ? "person" : "personer"}`;
+  const out = list.filter((f) => f.dir !== "home"), home = list.filter((f) => f.dir === "home");
+  if (out.length && home.length) {
+    const places = new Set(list.map((f) => f.awayKey)).size;
+    $("count").textContent = `${places} ${places === 1 ? "destinasjon" : "destinasjoner"} med ledig plass begge veier ${who}`;
+  } else {
+    $("count").textContent = `${list.length} ${list.length === 1 ? "ledig bonusreise" : "ledige bonusreiser"} ${who}`;
+  }
   if (!list.length) {
-    $("list").innerHTML = `<div class="empty">${expired ? "Datoen har passert." : "Ingen ledige seter med disse filtrene akkurat nå. Lagre søket som varsel, så sier vi fra når noe dukker opp."}</div>`;
+    const none = st.tripType === "round"
+      ? "Fant ingen destinasjon med ledige seter både ut og hjem. Prøv flere dager, flere klasser eller «Bare ut»/«Bare hjem» for å se hver vei for seg."
+      : "Ingen ledige seter med disse filtrene akkurat nå. Lagre søket som varsel, så sier vi fra når noe dukker opp.";
+    $("list").innerHTML = `<div class="empty">${expired ? "Datoen har passert." : none}</div>`;
     return;
   }
-  $("list").innerHTML = list.slice(0, 60).map((f) => {
+  const section = (title, items) => items.length
+    ? `<h3 class="section-h">${title} <small>${items.length} ${items.length === 1 ? "reise" : "reiser"}</small></h3>${cards(items.slice(0, 60))}` : "";
+  $("list").innerHTML = out.length && home.length
+    ? section("Utreise", out) + section("Hjemreise", home)
+    : cards(list.slice(0, 60));
+}
+
+function cards(items) {
+  return items.map((f) => {
     const cls = f.cabin === "business" ? "biz" : f.cabin === "premium" ? "prem" : "";
     const off = f.daysFromWanted === 0 ? "Ønsket dato" : `${Math.abs(f.daysFromWanted)} ${Math.abs(f.daysFromWanted) === 1 ? "dag" : "dager"} ${f.daysFromWanted < 0 ? "før" : "etter"}`;
     // SAS's Award Finder caps the count at 10, so 10 means "10 or more".
@@ -237,6 +271,9 @@ async function load() {
 
     $("want").min = status.today;
     $("want").value = addDays(status.today, 60);
+    $("back").min = status.today;
+    $("back").value = addDays(status.today, 74);
+    setTripType("round");
     flexNote();
   } catch (err) {
     $("list").innerHTML = `<div class="empty">${esc(err.message)}</div>`;

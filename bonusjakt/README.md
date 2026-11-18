@@ -78,7 +78,7 @@ Utvidelsen i `bonusjakt/extension/` søker direkte på sas.no gjennom Chrome, de
 
 **Slik søker den:** utvidelsen bruker SAS sin egen Award Finder på sas.no. Den viser ledige *bonusseter* (det Amex 2 for 1 gjelder for) per dag i Economy (Go), Premium (Plus) og Business, for alle SAS-destinasjoner i verdensdelen du velger. Poengprisen og skatten hentes fra bestillingssiden og huskes i en uke per rute. Award Finder viser bare SAS sine egne fly. Når du har valgt én destinasjon i «Til» og «Ta med partnerfly» er på, søker Bonusjakt også i SAS sin partnerbestilling (SkyTeam: KLM, Air France, Delta osv.), én dag om gangen. Det krever at du er logget inn på sas.no: Bonusjakt bruker den samme innloggingen som sas.no-siden selv bruker, i den samme fanen, og lagrer den ikke.
 
-Du kan søke i en hel verdensdel, eller velge én destinasjon i feltet «Til» (lista kommer fra SAS). Ledige seter vises med en gang, og poengprisen fylles inn rett etterpå. «Bestill i Award Finder» åpner Award Finder på sas.no for strekningen.
+Velg **Tur/retur**, **Bare ut** eller **Bare hjem** (for eksempel fra La Paz tilbake til Oslo). Ved tur/retur vises bare destinasjoner med ledig plass begge veier, delt i utreise og hjemreise. Du kan søke i en hel verdensdel, eller velge én destinasjon i feltet «Til» (lista kommer fra SAS). Ledige seter vises med en gang, og poengprisen fylles inn rett etterpå. «Bestill i Award Finder» åpner Award Finder på sas.no for strekningen.
 
 Søket tar pauser mellom kallene og ber om omtrent det samme som når du klikker deg rundt selv. Ber SAS deg bekrefte at du er et menneske, stopper Bonusjakt og sier fra; den prøver aldri å komme rundt sjekken.
 

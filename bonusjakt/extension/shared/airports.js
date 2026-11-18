@@ -34,6 +34,11 @@ export const CITIES = {
   TPE: "Taipei", BKK: "Bangkok", HKT: "Phuket", SGN: "Ho Chi Minh-byen", HAN: "Hanoi", SIN: "Singapore",
   KUL: "Kuala Lumpur", DEL: "Delhi", BOM: "Mumbai", DXB: "Dubai", DOH: "Doha", RUH: "Riyadh", AUH: "Abu Dhabi",
   SYD: "Sydney", MEL: "Melbourne", BNE: "Brisbane", PER: "Perth", AKL: "Auckland",
+  // City codes (several airports) used by SAS's partner booking.
+  LON: "London", PAR: "Paris", NYC: "New York", TYO: "Tokyo", SEL: "Seoul", MIL: "Milano", ROM: "Roma", STO: "Stockholm",
+  WAS: "Washington", CHI: "Chicago", BUE: "Buenos Aires", SAO: "São Paulo", RIO: "Rio de Janeiro", YTO: "Toronto", YMQ: "Montréal",
+  BJS: "Beijing", SHA: "Shanghai", OSA: "Osaka", JKT: "Jakarta", MOW: "Moskva", BER: "Berlin",
+  LPB: "La Paz", VVI: "Santa Cruz", CUZ: "Cusco", MVD: "Montevideo", UIO: "Quito", PTY: "Panama by", SJO: "San José",
 };
 export const cityName = (code) => CITIES[code] || code;
 

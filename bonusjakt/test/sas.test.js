@@ -84,7 +84,7 @@ test("member profile data is masked whole", () => {
 test("a chosen destination narrows the search to that one", () => {
   assert.deepEqual(pickDestinations(destinations, { region: "europa", dest: "HND" }).map((d) => d.airportCode), ["HND"]);
   const trips = parseAvailability(aal, { origin: "OSL", start: "2026-11-21", end: "2026-11-21" });
-  const other = { ...trips[0], key: "x", dest: "CPH", destCityCode: "CPH" };
+  const other = { ...trips[0], key: "x", dest: "CPH", destCityCode: "CPH", awayCode: "CPH", awayCity: "CPH" };
   const params = normalizeParams({ from: "OSL", want: "2026-11-21", flex: 0, region: "asia", dest: "aal", cabins: ["business", "economy"], pax: 1 });
   assert.equal(params.dest, "AAL");
   const { results } = filterAndPrice([...trips, other], params, "2026-11-16");
@@ -148,4 +148,51 @@ test("SAS and partner destinations meet in one picker list by city code", () => 
 
 test("partner search URL matches the site's", () => {
   assert.equal(partnerFlightsUrl("OSL", "LON", "2026-12-10", { pax: 2, oneWay: false }), "https://www.sas.no/award-api/flights?origin=OSL&destination=LON&outboundDate=2026-12-10&inboundDate=2026-12-17&tripType=round-trip&adults=2&children=0&infants=0&youths=0");
+});
+
+// ---------- Round trips and trips home ----------
+test("Award Finder answer gives trips home from the inbound days", () => {
+  const trips = parseAvailability(aal, { origin: "OSL", start: "2026-11-21", end: "2026-11-21", backStart: "2026-11-22", backEnd: "2026-11-22", dirs: ["out", "home"] });
+  const out = trips.filter((t) => t.dir === "out"), home = trips.filter((t) => t.dir === "home");
+  assert.ok(out.length && home.length);
+  assert.ok(out.every((t) => t.origin === "OSL" && t.dest === "AAL" && t.date === "2026-11-21"));
+  assert.ok(home.every((t) => t.origin === "AAL" && t.dest === "OSL" && t.date === "2026-11-22"));
+  const expected = aal[0].availability.inbound.find((d) => d.date === "2026-11-22");
+  assert.equal(home.find((t) => t.cabin === "economy")?.seats, expected.AG);
+});
+
+test("round trip keeps only destinations with seats both ways", () => {
+  const trips = parseAvailability(aal, { origin: "OSL", start: "2026-11-21", end: "2026-11-21", backStart: "2026-11-22", backEnd: "2026-11-22", dirs: ["out", "home"] });
+  const onlyOut = { ...trips.find((t) => t.dir === "out"), key: "cph", dest: "CPH", awayCode: "CPH", awayCity: "CPH" };
+  const params = normalizeParams({ from: "OSL", tripType: "round", want: "2026-11-21", back: "2026-11-22", flex: 0, region: "all", cabins: ["business", "economy"], pax: 1 });
+  const { results } = filterAndPrice([...trips, onlyOut], params, "2026-11-16");
+  assert.ok(results.some((r) => r.dir === "out") && results.some((r) => r.dir === "home"));
+  assert.ok(results.every((r) => r.awayKey === "AAL"), "CPH has no way home, so it is left out");
+  const home = results.find((r) => r.dir === "home");
+  assert.equal(home.originCity, "Aalborg");
+  assert.equal(home.daysFromWanted, 0);
+});
+
+test("home only: from the destination back to Norway", () => {
+  const trips = parseAvailability(aal, { origin: "OSL", backStart: "2026-11-20", backEnd: "2026-11-24", dirs: ["home"] });
+  const params = normalizeParams({ from: "OSL", tripType: "home", back: "2026-11-22", flex: 3, dest: "AAL", cabins: ["economy"], pax: 2 });
+  assert.equal(params.want, "2026-11-22");
+  const { results } = filterAndPrice(trips, params, "2026-11-16");
+  assert.ok(results.length > 0);
+  assert.ok(results.every((r) => r.dir === "home" && r.dest === "OSL" && r.origin === "AAL"));
+  assert.throws(() => normalizeParams({ from: "OSL", tripType: "round", want: "2026-11-22", back: "2026-11-20" }), /før utreisen/);
+  assert.throws(() => normalizeParams({ from: "OSL", tripType: "home" }), /hjemreisen/);
+});
+
+test("partner answer: the inbound side becomes trips home", () => {
+  const home = parsePartnerFlights(partner, { side: "inboundFlights", dir: "home", away: "LON", destName: "London" });
+  assert.ok(home.length > 0);
+  assert.ok(home.every((t) => t.dir === "home" && t.dest === "OSL" && t.awayCity === "LON"));
+  const sasHome = home.find((t) => t.airlines.join() === "SK");
+  assert.equal(sasHome.pts, 20000);
+  const params = normalizeParams({ from: "OSL", tripType: "home", back: "2026-12-17", flex: 0, dest: "LON", cabins: ["economy", "business"], pax: 2, amex: true });
+  const { results } = filterAndPrice(home, params, "2026-11-18");
+  const r = results.find((x) => x.sasOperated);
+  assert.equal(r.amexApplied, true);
+  assert.equal(r.pointsTotal, 20000);
 });

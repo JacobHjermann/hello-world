@@ -23,3 +23,6 @@ input[type=password]{font:inherit;color:var(--fg);background:var(--surface-2);bo
 .diag{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:12px;background:var(--surface-2);border-radius:10px;padding:12px;margin:0}
 .rec summary{cursor:pointer;font-weight:600}
 .rec[open]{display:grid;gap:10px}
+.triptype .chip{font-weight:600}
+.section-h{font-family:var(--display);font-size:17px;margin:14px 0 2px;display:flex;gap:10px;align-items:baseline}
+.section-h small{font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted)}

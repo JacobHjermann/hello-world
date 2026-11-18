@@ -74,23 +74,35 @@ export function destinationChoices(destinations, partnerChoices = []) {
 export const awardFinderUrl = (origin, dest) =>
   `${SAS_BASE}/award-finder?origin=${encodeURIComponent(origin)}${dest ? `&destination=${encodeURIComponent(dest)}` : ""}`;
 
-/** Award seats per day and class from an Award Finder availability answer, as Bonusjakt trips. */
-export function parseAvailability(items, { origin, start, end }) {
+/**
+ * Award seats per day and class from an Award Finder availability answer, as Bonusjakt trips.
+ * `origin` is the home airport (Norway). "outbound" days are trips out (home → destination) within
+ * [start, end]; "inbound" days are trips home (destination → home) within [backStart, backEnd].
+ */
+export function parseAvailability(items, { origin, start, end, backStart, backEnd, dirs = ["out"] }) {
   const trips = [];
+  const sides = [];
+  if (dirs.includes("out")) sides.push(["out", "outbound", start, end]);
+  if (dirs.includes("home")) sides.push(["home", "inbound", backStart, backEnd]);
   for (const d of Array.isArray(items) ? items : []) {
-    for (const day of d.availability?.outbound || []) {
-      if (day.date < start || day.date > end) continue;
-      for (const [code, cabin] of Object.entries(CLASS_TO_CABIN)) {
-        const seats = Number(day[code]) || 0;
-        if (!seats) continue;
-        trips.push({
-          key: `${day.date}|${origin}|${d.airportCode}|${cabin}`,
-          date: day.date, origin, dest: d.airportCode, destCityCode: d.cityCode, destName: d.cityName || d.airportName,
-          region: regionOf(d), cabin, airlines: ["SK"],
-          pts: null, taxes: null, taxCurrency: "NOK",
-          // Award Finder shows at most 10 per class; 10 means "10 or more".
-          seats, direct: null, source: "sas.no", award: true,
-        });
+    const away = { awayCode: d.airportCode, awayCity: d.cityCode || d.airportCode, awayName: d.cityName || d.airportName, region: regionOf(d) };
+    for (const [dir, side, from, to] of sides) {
+      for (const day of d.availability?.[side] || []) {
+        if (day.date < from || day.date > to) continue;
+        for (const [code, cabin] of Object.entries(CLASS_TO_CABIN)) {
+          const seats = Number(day[code]) || 0;
+          if (!seats) continue;
+          const [o, dst] = dir === "out" ? [origin, d.airportCode] : [d.airportCode, origin];
+          trips.push({
+            key: `${day.date}|${o}|${dst}|${cabin}`,
+            dir, date: day.date, origin: o, dest: dst,
+            destCityCode: dir === "out" ? d.cityCode : undefined, destName: dir === "out" ? away.awayName : undefined,
+            ...away, cabin, airlines: ["SK"],
+            pts: null, taxes: null, taxCurrency: "NOK",
+            // Award Finder shows at most 10 per class; 10 means "10 or more".
+            seats, direct: null, source: "sas.no", award: true,
+          });
+        }
       }
     }
   }
@@ -132,9 +144,10 @@ export const AWARD_APP = `${SAS_BASE}/booking/award/flights`;
 
 export const partnerLocationsUrl = () => `${AWARD_API}/locations?partner=SKYTEAM`;
 
-export function partnerFlightsUrl(origin, dest, date, { pax = 1, oneWay = true } = {}) {
+/** One request: one-way on `date`, or a round trip out on `date` and home on `inboundDate` (default a week later). */
+export function partnerFlightsUrl(origin, dest, date, { pax = 1, oneWay = true, inboundDate } = {}) {
   const base = `${AWARD_API}/flights?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&outboundDate=${date}`;
-  const trip = oneWay ? "&tripType=one-way" : `&inboundDate=${addDaysIso(date, 7)}&tripType=round-trip`;
+  const trip = oneWay ? "&tripType=one-way" : `&inboundDate=${inboundDate || addDaysIso(date, 7)}&tripType=round-trip`;
   return `${base}${trip}&adults=${pax}&children=0&infants=0&youths=0`;
 }
 const addDaysIso = (iso, n) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
@@ -150,10 +163,14 @@ export function partnerLocationChoices(locations) {
   });
 }
 
-/** Outbound partner (and SAS) award flights from one /award-api/flights answer, as trips. */
-export function parsePartnerFlights(answer, { origin, destName }) {
+/**
+ * Partner (and SAS) award flights from one /award-api/flights answer, as trips.
+ * side: "outboundFlights" or "inboundFlights" of the answer; dir: whether those flights take the
+ * traveller out from Norway or home. `away` is the destination's code (city or airport) as searched.
+ */
+export function parsePartnerFlights(answer, { side = "outboundFlights", dir = "out", away, destName } = {}) {
   const trips = [];
-  for (const f of answer?.outboundFlights || []) {
+  for (const f of answer?.[side] || []) {
     const date = String(f.startDateTimeInLocal || "").slice(0, 10);
     const airlines = [...new Set((f.segments || []).map((s) => s.operatingCarrier?.code || s.marketingCarrier?.code).filter(Boolean))];
     for (const c of f.cabins || []) {
@@ -162,9 +179,13 @@ export function parsePartnerFlights(answer, { origin, destName }) {
       const prices = Object.values(c.price || {}).filter((p) => p?.type === "points" && p.points > 0);
       if (!prices.length) continue;
       const best = prices.reduce((a, b) => (b.points < a.points ? b : a));
+      const o = f.origin?.code, dst = f.destination?.code;
+      const awayCode = dir === "out" ? dst : o;
+      const awayCity = (dir === "out" ? f.destinationCity?.code : f.originCity?.code) || away || awayCode;
       trips.push({
-        key: `${date}|${origin}|${f.destination?.code}|${cabin}|${airlines.join("-")}|${(f.segments || []).map((s) => s.flightNumber).join("-")}`,
-        date, origin, dest: f.destination?.code, destCityCode: f.destinationCity?.code, destName,
+        key: `${date}|${o}|${dst}|${cabin}|${airlines.join("-")}|${(f.segments || []).map((s) => s.flightNumber).join("-")}`,
+        dir, date, origin: o, dest: dst, destCityCode: dir === "out" ? f.destinationCity?.code : undefined, destName: dir === "out" ? destName : undefined,
+        awayCode, awayCity, awayName: destName,
         region: null, cabin, airlines,
         pts: best.points,
         // The answer shows 0 in taxes before the booking step; treat that as not known yet.

@@ -99,8 +99,10 @@ const handlers = {
   async addWatch({ params, name, destName }) {
     const store = await ChromeStore.load();
     const p = normalizeParams(params);
-    const region = p.dest ? destName || p.dest : p.region === "all" ? "Hele verden" : REGIONS[p.region].name;
-    const w = store.addWatch(p, String(name || `${ORIGINS[p.from]} → ${region}`).slice(0, 80));
+    const place = p.dest ? destName || p.dest : p.region === "all" ? "Hele verden" : REGIONS[p.region].name;
+    const home = ORIGINS[p.from];
+    const auto = p.tripType === "home" ? `${place} → ${home}` : p.tripType === "round" ? `${home} ⇄ ${place}` : `${home} → ${place}`;
+    const w = store.addWatch(p, String(name || auto).slice(0, 80));
     await store.flush();
     return { id: w.id, name: w.name };
   },

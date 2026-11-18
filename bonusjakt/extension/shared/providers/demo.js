@@ -26,7 +26,16 @@ export function createDemoProvider() {
   return {
     name: "eksempeldata",
     live: false,
-    async fetchTrips({ origin, region, start, end }) {
+    async fetchTrips({ origin, region, start, end, backStart, backEnd, dirs = ["out"] }) {
+      const trips = [];
+      if (dirs.includes("out")) trips.push(...generate({ origin, region, start, end, dir: "out" }));
+      if (dirs.includes("home")) trips.push(...generate({ origin, region, start: backStart, end: backEnd, dir: "home" }));
+      return trips;
+    },
+  };
+}
+
+function generate({ origin, region, start, end, dir }) {
       const span = daysBetween(start, end);
       const trips = [];
       for (const reg of Object.keys(DEST)) {
@@ -35,14 +44,15 @@ export function createDemoProvider() {
           // Seeded per route and day so the same search gives the same answer.
           for (let i = 0; i <= span; i++) {
             const date = addDays(start, i);
-            const r = rng(`${origin}${dest}${date}`);
+            const r = rng(`${dir === "out" ? origin + dest : dest + origin}${date}`);
             if (r() > 0.35) continue;
             const ci = Math.floor(r() * 3);
             const isSas = airlines[0] === "SK" && r() > 0.25;
             const op = isSas ? ["SK"] : [airlines[airlines.length - 1]];
+            const [o, d] = dir === "out" ? [origin, dest] : [dest, origin];
             trips.push({
-              key: `${date}|${origin}|${dest}|${CABINS[ci]}`,
-              date, origin, dest, region: reg, cabin: CABINS[ci], airlines: op,
+              key: `${date}|${o}|${d}|${CABINS[ci]}`,
+              dir, date, origin: o, dest: d, awayCode: dest, awayCity: dest, region: reg, cabin: CABINS[ci], airlines: op,
               pts: Math.round((BASE[reg][ci] * (isSas ? 1 : 1.25) * (0.9 + r() * 0.3)) / 500) * 500,
               taxes: Math.round(((reg === "europa" ? 600 : 1200) * (ci + 1) * (0.8 + r() * 0.5)) / 10) * 10,
               taxCurrency: "NOK",
@@ -54,6 +64,4 @@ export function createDemoProvider() {
         }
       }
       return trips;
-    },
-  };
 }

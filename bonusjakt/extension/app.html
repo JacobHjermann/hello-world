@@ -32,12 +32,18 @@
     </div>
 
     <form class="console" id="search" autocomplete="off">
+      <div class="chips triptype" id="triptype" role="group" aria-label="Reisetype">
+        <button type="button" class="chip" data-v="round" aria-pressed="true">Tur/retur</button>
+        <button type="button" class="chip" data-v="out" aria-pressed="false">Bare ut</button>
+        <button type="button" class="chip" data-v="home" aria-pressed="false">Bare hjem</button>
+      </div>
       <div class="row">
-        <div class="field"><label for="from">Fra</label><select id="from"></select></div>
-        <div class="field"><label for="to">Til</label>
+        <div class="field"><label for="from">Hjemmeflyplass</label><select id="from"></select></div>
+        <div class="field"><label for="to">Destinasjon</label>
           <input id="to" type="text" list="to-list" placeholder="Alle i valgt verdensdel" autocomplete="off">
           <datalist id="to-list"></datalist></div>
-        <div class="field"><label for="want">Ønsket avreise</label><input id="want" type="date"></div>
+        <div class="field" id="want-field"><label for="want">Utreise</label><input id="want" type="date"></div>
+        <div class="field" id="back-field"><label for="back">Hjemreise</label><input id="back" type="date"></div>
         <div class="field"><label for="flex">Fleksibel dato</label>
           <select id="flex"><option value="0">Kun denne datoen</option><option value="3">± 3 dager</option><option value="7" selected>± 7 dager</option><option value="14">± 14 dager</option></select></div>
         <div class="field"><label for="paxv">Antall reisende</label>

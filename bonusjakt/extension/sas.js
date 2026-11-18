@@ -13,7 +13,9 @@ const DEST_TTL = 24 * 3600e3;   // The destination list changes rarely.
 const PRICE_TTL = 7 * 24 * 3600e3;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const nextDay = (iso) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); };
+const addDays = (iso, n) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const daysBetween = (a, b) => Math.round((new Date(b + "T12:00:00Z") - new Date(a + "T12:00:00Z")) / 86400000);
+const minIso = (a, b) => (a < b ? a : b);
 
 export class SasBlockedError extends Error {}
 
@@ -161,19 +163,45 @@ export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetc
 
   const partnerLocations = () => cached("sasPartnerLocations", DEST_TTL, () => getAward(partnerLocationsUrl()));
 
-  /** Partner award seats to one destination, one request per day in the window. */
-  async function partnerTrips({ origin, dest, start, end, pax, destName }) {
-    const trips = [];
-    for (let date = start; date <= end; date = nextDay(date)) {
-      let answer;
-      if (oneWayWorks) {
-        try { answer = await getAward(partnerFlightsUrl(origin, dest, date, { pax, oneWay: true })); }
-        catch (err) { if (err instanceof SasBlockedError) throw err; oneWayWorks = false; }
-      }
-      // The site itself searched round trips; fall back to that and read only the outbound flights.
-      if (!oneWayWorks) answer = await getAward(partnerFlightsUrl(origin, dest, date, { pax, oneWay: false }));
-      trips.push(...parsePartnerFlights(answer, { origin, destName }).filter((t) => t.date === date));
+  const parse = (answer, side, dir, ctx, date) =>
+    parsePartnerFlights(answer, { side, dir, away: ctx.dest, destName: ctx.destName }).filter((t) => t.date === date);
+
+  /** One direction, one request per day: one-way if SAS takes it, else the round-trip form the site uses. */
+  async function partnerOneWay(ctx, dir, date) {
+    const { origin, dest, pax } = ctx;
+    if (oneWayWorks) {
+      try {
+        const [o, d] = dir === "out" ? [origin, dest] : [dest, origin];
+        return parse(await getAward(partnerFlightsUrl(o, d, date, { pax, oneWay: true })), "outboundFlights", dir, ctx, date);
+      } catch (err) { if (err instanceof SasBlockedError) throw err; oneWayWorks = false; }
     }
+    if (dir === "out") {
+      return parse(await getAward(partnerFlightsUrl(origin, dest, date, { pax, oneWay: false })), "outboundFlights", "out", ctx, date);
+    }
+    // Home only: a round trip that comes home on `date`, reading just the home side.
+    const answer = await getAward(partnerFlightsUrl(origin, dest, addDays(date, -7), { pax, oneWay: false, inboundDate: date }));
+    return parse(answer, "inboundFlights", "home", ctx, date);
+  }
+
+  /**
+   * Partner award seats to (and/or from) one destination. A round trip pairs day i out with day i
+   * home in one request, the way the site searches, so both directions cost one request per day.
+   */
+  async function partnerTrips(ctx) {
+    const { dirs, start, end, backStart, backEnd } = ctx;
+    const trips = [];
+    if (dirs.includes("out") && dirs.includes("home")) {
+      const days = Math.max(daysBetween(start, end), daysBetween(backStart, backEnd));
+      for (let i = 0; i <= days; i++) {
+        const out = minIso(addDays(start, i), end), home = minIso(addDays(backStart, i), backEnd);
+        const answer = await getAward(partnerFlightsUrl(ctx.origin, ctx.dest, out, { pax: ctx.pax, oneWay: false, inboundDate: home }));
+        trips.push(...parse(answer, "outboundFlights", "out", ctx, out), ...parse(answer, "inboundFlights", "home", ctx, home));
+      }
+      return trips;
+    }
+    const dir = dirs.includes("home") ? "home" : "out";
+    const [from, to] = dir === "out" ? [start, end] : [backStart, backEnd];
+    for (let date = from; date <= to; date = addDays(date, 1)) trips.push(...(await partnerOneWay(ctx, dir, date)));
     return trips;
   }
 
@@ -242,19 +270,19 @@ export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetc
       try { partners = partnerLocationChoices(await partnerLocations()); } catch { /* SAS's own only */ }
       return { own, partners };
     },
-    async fetchTrips({ origin, region, dest, cabins, partners = true, pax = 1, start, end }) {
+    async fetchTrips({ origin, region, dest, cabins, partners = true, pax = 1, dirs = ["out"], start, end, backStart, backEnd }) {
       calls = 0;
       const all = await destinations(origin);
       const dests = pickDestinations(all, { region, dest });
       const trips = [];
       for (let i = 0; i < dests.length; i += CHUNK) {
         const codes = dests.slice(i, i + CHUNK).map((d) => d.airportCode);
-        trips.push(...parseAvailability(await availability(origin, codes), { origin, start, end }));
+        trips.push(...parseAvailability(await availability(origin, codes), { origin, start, end, backStart, backEnd, dirs }));
       }
       // Partner award seats are searched one route and one day at a time, so only for a chosen destination.
       if (dest && partners) {
         const destName = dests[0]?.cityName;
-        trips.push(...(await partnerTrips({ origin, dest, start, end, pax, destName })));
+        trips.push(...(await partnerTrips({ origin, dest, pax, destName, dirs, start, end, backStart, backEnd })));
       }
       const wanted = trips.filter((t) => cabins.includes(t.cabin));
       const unpriced = wanted.filter((t) => t.pts == null);
