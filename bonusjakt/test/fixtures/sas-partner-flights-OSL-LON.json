@@ -1,0 +1,408 @@
+{
+ "tripType": "round-trip",
+ "outboundFlights": [
+  {
+   "origin": {
+    "code": "OSL"
+   },
+   "destination": {
+    "code": "LHR"
+   },
+   "destinationCity": {
+    "code": "LON"
+   },
+   "startDateTimeInLocal": "2026-12-10T12:35:00",
+   "stops": 1,
+   "awardType": "SKY",
+   "segments": [
+    {
+     "flightNumber": "1200",
+     "operatingCarrier": {
+      "code": "KL"
+     },
+     "marketingCarrier": {
+      "code": "KL"
+     }
+    },
+    {
+     "flightNumber": "1011",
+     "operatingCarrier": {
+      "code": "KL"
+     },
+     "marketingCarrier": {
+      "code": "KL"
+     }
+    }
+   ],
+   "cabins": [
+    {
+     "cabin": "business",
+     "availableSeats": 3,
+     "price": {
+      "SKY": {
+       "points": 40000,
+       "totalTax": 0,
+       "type": "points"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "inboundFlights": [
+  {
+   "origin": {
+    "code": "LHR"
+   },
+   "destination": {
+    "code": "OSL"
+   },
+   "destinationCity": {
+    "code": "OSL"
+   },
+   "startDateTimeInLocal": "2026-12-17T07:05:00",
+   "stops": 0,
+   "awardType": "SAS",
+   "segments": [
+    {
+     "flightNumber": "802",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    }
+   ],
+   "cabins": [
+    {
+     "cabin": "economy",
+     "availableSeats": 9,
+     "price": {
+      "SKY": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      },
+      "BILATERAL": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "origin": {
+    "code": "LHR"
+   },
+   "destination": {
+    "code": "OSL"
+   },
+   "destinationCity": {
+    "code": "OSL"
+   },
+   "startDateTimeInLocal": "2026-12-17T17:30:00",
+   "stops": 0,
+   "awardType": "SAS",
+   "segments": [
+    {
+     "flightNumber": "810",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    }
+   ],
+   "cabins": [
+    {
+     "cabin": "economy",
+     "availableSeats": 9,
+     "price": {
+      "SKY": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      },
+      "BILATERAL": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "origin": {
+    "code": "LHR"
+   },
+   "destination": {
+    "code": "OSL"
+   },
+   "destinationCity": {
+    "code": "OSL"
+   },
+   "startDateTimeInLocal": "2026-12-17T17:00:00",
+   "stops": 1,
+   "awardType": "SAS",
+   "segments": [
+    {
+     "flightNumber": "506",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    },
+    {
+     "flightNumber": "1472",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    }
+   ],
+   "cabins": [
+    {
+     "cabin": "economy",
+     "availableSeats": 9,
+     "price": {
+      "SKY": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      },
+      "BILATERAL": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "origin": {
+    "code": "LHR"
+   },
+   "destination": {
+    "code": "OSL"
+   },
+   "destinationCity": {
+    "code": "OSL"
+   },
+   "startDateTimeInLocal": "2026-12-17T17:00:00",
+   "stops": 1,
+   "awardType": "SAS",
+   "segments": [
+    {
+     "flightNumber": "506",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    },
+    {
+     "flightNumber": "1474",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    }
+   ],
+   "cabins": [
+    {
+     "cabin": "economy",
+     "availableSeats": 9,
+     "price": {
+      "SKY": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      },
+      "BILATERAL": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "origin": {
+    "code": "LCY"
+   },
+   "destination": {
+    "code": "OSL"
+   },
+   "destinationCity": {
+    "code": "OSL"
+   },
+   "startDateTimeInLocal": "2026-12-17T17:05:00",
+   "stops": 1,
+   "awardType": "SKY",
+   "segments": [
+    {
+     "flightNumber": "990",
+     "operatingCarrier": {
+      "code": "KL"
+     },
+     "marketingCarrier": {
+      "code": "KL"
+     }
+    },
+    {
+     "flightNumber": "1207",
+     "operatingCarrier": {
+      "code": "KL"
+     },
+     "marketingCarrier": {
+      "code": "KL"
+     }
+    }
+   ],
+   "cabins": [
+    {
+     "cabin": "business",
+     "availableSeats": 4,
+     "price": {
+      "SKY": {
+       "points": 40000,
+       "totalTax": 0,
+       "type": "points"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "origin": {
+    "code": "LHR"
+   },
+   "destination": {
+    "code": "OSL"
+   },
+   "destinationCity": {
+    "code": "OSL"
+   },
+   "startDateTimeInLocal": "2026-12-17T17:05:00",
+   "stops": 1,
+   "awardType": "SKY",
+   "segments": [
+    {
+     "flightNumber": "1012",
+     "operatingCarrier": {
+      "code": "KL"
+     },
+     "marketingCarrier": {
+      "code": "KL"
+     }
+    },
+    {
+     "flightNumber": "1207",
+     "operatingCarrier": {
+      "code": "KL"
+     },
+     "marketingCarrier": {
+      "code": "KL"
+     }
+    }
+   ],
+   "cabins": [
+    {
+     "cabin": "business",
+     "availableSeats": 4,
+     "price": {
+      "SKY": {
+       "points": 40000,
+       "totalTax": 0,
+       "type": "points"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "origin": {
+    "code": "LHR"
+   },
+   "destination": {
+    "code": "OSL"
+   },
+   "destinationCity": {
+    "code": "OSL"
+   },
+   "startDateTimeInLocal": "2026-12-17T17:00:00",
+   "stops": 3,
+   "awardType": "SAS",
+   "segments": [
+    {
+     "flightNumber": "506",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    },
+    {
+     "flightNumber": "448",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    },
+    {
+     "flightNumber": "140",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    },
+    {
+     "flightNumber": "843",
+     "operatingCarrier": {
+      "code": "SK"
+     },
+     "marketingCarrier": {
+      "code": "SK"
+     }
+    }
+   ],
+   "cabins": [
+    {
+     "cabin": "economy",
+     "availableSeats": 9,
+     "price": {
+      "SKY": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      },
+      "BILATERAL": {
+       "points": 20000,
+       "totalTax": 0,
+       "type": "points"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

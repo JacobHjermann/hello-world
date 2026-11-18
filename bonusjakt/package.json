@@ -1,0 +1,22 @@
+{
+  "name": "bonusjakt",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Søker etter ledige EuroBonus-bonusreiser med SAS og partnere, og varsler på e-post, SMS eller Telegram.",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node scripts/build-extension.js --check && node --test test/*.test.js",
+    "check-api": "node scripts/check-api.js",
+    "build:extension": "node scripts/build-extension.js"
+  },
+  "dependencies": {
+    "express": "^4.22.3",
+    "nodemailer": "^10.3.1"
+  }
+}

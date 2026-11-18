@@ -1,0 +1,520 @@
+{
+ "currency": {
+  "code": "NOK"
+ },
+ "outboundFlights": {
+  "F9": {
+   "origin": {
+    "code": "OSL"
+   },
+   "destination": {
+    "code": "AAL"
+   },
+   "startTimeInLocal": "2026-11-21T11:10:00.000+01:00",
+   "stops": 1,
+   "cabins": {
+    "BUSINESS": {
+     "BUSINESS FLEX": {
+      "products": {
+       "O_78": {
+        "productName": "BUSINESS FLEX",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 81819,
+         "pointsAfterDiscount": 81819
+        },
+        "fares": [
+         {
+          "avlSeats": 8
+         },
+         {
+          "avlSeats": 8
+         }
+        ]
+       }
+      }
+     },
+     "BUSINESS": {
+      "products": {
+       "O_67": {
+        "productName": "BUSINESS",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 72272,
+         "pointsAfterDiscount": 72272
+        },
+        "fares": [
+         {
+          "avlSeats": 8
+         },
+         {
+          "avlSeats": 8
+         }
+        ]
+       }
+      }
+     }
+    },
+    "ECONOMY": {
+     "LIGHT": {
+      "products": {
+       "O_21": {
+        "productName": "LIGHT",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 55575,
+         "pointsAfterDiscount": 55575
+        },
+        "fares": [
+         {
+          "avlSeats": 9
+         },
+         {
+          "avlSeats": 9
+         }
+        ]
+       }
+      }
+     },
+     "FLEX": {
+      "products": {
+       "O_52": {
+        "productName": "FLEX",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 71084,
+         "pointsAfterDiscount": 71084
+        },
+        "fares": [
+         {
+          "avlSeats": 9
+         },
+         {
+          "avlSeats": 9
+         }
+        ]
+       }
+      }
+     },
+     "STANDARD": {
+      "products": {
+       "O_38": {
+        "productName": "STANDARD",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 60349,
+         "pointsAfterDiscount": 60349
+        },
+        "fares": [
+         {
+          "avlSeats": 9
+         },
+         {
+          "avlSeats": 9
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   "lowestFares": {
+    "BUSINESS": {
+     "product": "BUSINESS",
+     "productId": "O_67",
+     "avlSeats": 8,
+     "points": 72272,
+     "discountedPoints": 0,
+     "pointsAfterDiscount": 72272
+    },
+    "ECONOMY": {
+     "product": "LIGHT",
+     "productId": "O_21",
+     "avlSeats": 9,
+     "points": 55575,
+     "discountedPoints": 0,
+     "pointsAfterDiscount": 55575
+    }
+   }
+  },
+  "F0": {
+   "origin": {
+    "code": "OSL"
+   },
+   "destination": {
+    "code": "AAL"
+   },
+   "startTimeInLocal": "2026-11-21T21:05:00.000+01:00",
+   "stops": 1,
+   "cabins": {
+    "BUSINESS": {
+     "BUSINESS BONUS": {
+      "products": {
+       "O_8": {
+        "productName": "BUSINESS BONUS",
+        "isStandardAward": true,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 20000,
+         "pointsAfterDiscount": 20000
+        },
+        "fares": [
+         {
+          "avlSeats": 3
+         },
+         {
+          "avlSeats": 3
+         }
+        ]
+       }
+      }
+     }
+    },
+    "ECONOMY": {
+     "ECONOMY BONUS": {
+      "products": {
+       "O_1": {
+        "productName": "ECONOMY BONUS",
+        "isStandardAward": true,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 10000,
+         "pointsAfterDiscount": 10000
+        },
+        "fares": [
+         {
+          "avlSeats": 9
+         },
+         {
+          "avlSeats": 9
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   "lowestFares": {
+    "BUSINESS": {
+     "product": "BUSINESS BONUS",
+     "productId": "O_8",
+     "avlSeats": 3,
+     "points": 20000,
+     "discountedPoints": 0,
+     "pointsAfterDiscount": 20000,
+     "isStandardAward": true
+    },
+    "ECONOMY": {
+     "product": "ECONOMY BONUS",
+     "productId": "O_1",
+     "avlSeats": 9,
+     "points": 10000,
+     "discountedPoints": 0,
+     "pointsAfterDiscount": 10000,
+     "isStandardAward": true
+    }
+   }
+  },
+  "F10": {
+   "origin": {
+    "code": "OSL"
+   },
+   "destination": {
+    "code": "AAL"
+   },
+   "startTimeInLocal": "2026-11-21T15:30:00.000+01:00",
+   "stops": 1,
+   "cabins": {
+    "BUSINESS": {
+     "BUSINESS FLEX": {
+      "products": {
+       "O_89": {
+        "productName": "BUSINESS FLEX",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 90179,
+         "pointsAfterDiscount": 90179
+        },
+        "fares": [
+         {
+          "avlSeats": 5
+         },
+         {
+          "avlSeats": 5
+         }
+        ]
+       }
+      }
+     },
+     "BUSINESS": {
+      "products": {
+       "O_76": {
+        "productName": "BUSINESS",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 80632,
+         "pointsAfterDiscount": 80632
+        },
+        "fares": [
+         {
+          "avlSeats": 5
+         },
+         {
+          "avlSeats": 5
+         }
+        ]
+       }
+      }
+     }
+    },
+    "ECONOMY": {
+     "LIGHT": {
+      "products": {
+       "O_22": {
+        "productName": "LIGHT",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 55575,
+         "pointsAfterDiscount": 55575
+        },
+        "fares": [
+         {
+          "avlSeats": 1
+         },
+         {
+          "avlSeats": 1
+         }
+        ]
+       }
+      }
+     },
+     "FLEX": {
+      "products": {
+       "O_53": {
+        "productName": "FLEX",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 71084,
+         "pointsAfterDiscount": 71084
+        },
+        "fares": [
+         {
+          "avlSeats": 1
+         },
+         {
+          "avlSeats": 1
+         }
+        ]
+       }
+      }
+     },
+     "STANDARD": {
+      "products": {
+       "O_39": {
+        "productName": "STANDARD",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 60349,
+         "pointsAfterDiscount": 60349
+        },
+        "fares": [
+         {
+          "avlSeats": 1
+         },
+         {
+          "avlSeats": 1
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   "lowestFares": {
+    "BUSINESS": {
+     "product": "BUSINESS",
+     "productId": "O_76",
+     "avlSeats": 5,
+     "points": 80632,
+     "discountedPoints": 0,
+     "pointsAfterDiscount": 80632
+    },
+    "ECONOMY": {
+     "product": "LIGHT",
+     "productId": "O_22",
+     "avlSeats": 1,
+     "points": 55575,
+     "discountedPoints": 0,
+     "pointsAfterDiscount": 55575
+    }
+   }
+  },
+  "F11": {
+   "origin": {
+    "code": "OSL"
+   },
+   "destination": {
+    "code": "AAL"
+   },
+   "startTimeInLocal": "2026-11-21T05:55:00.000+01:00",
+   "stops": 1,
+   "cabins": {
+    "BUSINESS": {
+     "BUSINESS FLEX": {
+      "products": {
+       "O_80": {
+        "productName": "BUSINESS FLEX",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 81819,
+         "pointsAfterDiscount": 81819
+        },
+        "fares": [
+         {
+          "avlSeats": 9
+         },
+         {
+          "avlSeats": 9
+         }
+        ]
+       }
+      }
+     },
+     "BUSINESS": {
+      "products": {
+       "O_68": {
+        "productName": "BUSINESS",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 72272,
+         "pointsAfterDiscount": 72272
+        },
+        "fares": [
+         {
+          "avlSeats": 9
+         },
+         {
+          "avlSeats": 9
+         }
+        ]
+       }
+      }
+     }
+    },
+    "ECONOMY": {
+     "LIGHT": {
+      "products": {
+       "O_23": {
+        "productName": "LIGHT",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 55575,
+         "pointsAfterDiscount": 55575
+        },
+        "fares": [
+         {
+          "avlSeats": 9
+         },
+         {
+          "avlSeats": 9
+         }
+        ]
+       }
+      }
+     },
+     "FLEX": {
+      "products": {
+       "O_54": {
+        "productName": "FLEX",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 71084,
+         "pointsAfterDiscount": 71084
+        },
+        "fares": [
+         {
+          "avlSeats": 9
+         },
+         {
+          "avlSeats": 9
+         }
+        ]
+       }
+      }
+     },
+     "STANDARD": {
+      "products": {
+       "O_40": {
+        "productName": "STANDARD",
+        "isStandardAward": null,
+        "price": {
+         "currency": "NOK",
+         "totalTax": 422,
+         "points": 60349,
+         "pointsAfterDiscount": 60349
+        },
+        "fares": [
+         {
+          "avlSeats": 9
+         },
+         {
+          "avlSeats": 9
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   "lowestFares": {
+    "BUSINESS": {
+     "product": "BUSINESS",
+     "productId": "O_68",
+     "avlSeats": 9,
+     "points": 72272,
+     "discountedPoints": 0,
+     "pointsAfterDiscount": 72272
+    },
+    "ECONOMY": {
+     "product": "LIGHT",
+     "productId": "O_23",
+     "avlSeats": 9,
+     "points": 55575,
+     "discountedPoints": 0,
+     "pointsAfterDiscount": 55575
+    }
+   }
+  }
+ },
+ "bookingFlow": "POINTS"
+}

@@ -1,0 +1,2053 @@
+[
+ {
+  "airportCode": "AAL",
+  "airportName": "Aalborg",
+  "cityCode": "AAL",
+  "cityName": "Aalborg",
+  "long": 9.84993,
+  "lat": 57.094765,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Danmark"
+ },
+ {
+  "airportCode": "AGA",
+  "airportName": "Al Massira",
+  "cityCode": "AGA",
+  "cityName": "Agadir",
+  "long": -9.412003,
+  "lat": 30.322477,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Marokko"
+ },
+ {
+  "airportCode": "ALC",
+  "airportName": "Alicante",
+  "cityCode": "ALC",
+  "cityName": "Alicante",
+  "long": -0.558156,
+  "lat": 38.2822,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "ALF",
+  "airportName": "Alta",
+  "cityCode": "ALF",
+  "cityName": "Alta",
+  "long": 23.3717,
+  "lat": 69.9761,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "AMS",
+  "airportName": "Schiphol",
+  "cityCode": "AMS",
+  "cityName": "Amsterdam",
+  "long": 4.76389,
+  "lat": 52.3086,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Nederland"
+ },
+ {
+  "airportCode": "AYT",
+  "airportName": "Antalya",
+  "cityCode": "AYT",
+  "cityName": "Antalya",
+  "long": 30.8005,
+  "lat": 36.8987,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tyrkia"
+ },
+ {
+  "airportCode": "ATH",
+  "airportName": "Eleftherios Venizelos",
+  "cityCode": "ATH",
+  "cityName": "Athen",
+  "long": 23.9445,
+  "lat": 37.9364,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Hellas"
+ },
+ {
+  "airportCode": "ATL",
+  "airportName": "Atlanta GA - Hartsfield-Jackson Intl",
+  "cityCode": "ATL",
+  "cityName": "Atlanta",
+  "long": -84.4281,
+  "lat": 33.6367,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "BKK",
+  "airportName": "Bangkok - Suvarnabhumi Intl",
+  "cityCode": "BKK",
+  "cityName": "Bangkok",
+  "long": 100.747,
+  "lat": 13.6811,
+  "flightClasses": [
+   "AG"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Thailand"
+ },
+ {
+  "airportCode": "BCN",
+  "airportName": "Barcelona",
+  "cityCode": "BCN",
+  "cityName": "Barcelona",
+  "long": 2.07846,
+  "lat": 41.2971,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "BRI",
+  "airportName": "Palese",
+  "cityCode": "BRI",
+  "cityName": "Bari",
+  "long": 16.7606,
+  "lat": 41.1389,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "BGO",
+  "airportName": "Flesland",
+  "cityCode": "BGO",
+  "cityName": "Bergen",
+  "long": 5.21814,
+  "lat": 60.2934,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "BER",
+  "airportName": "Brandenburg",
+  "cityCode": "BER",
+  "cityName": "Berlin",
+  "long": 13.500672,
+  "lat": 52.362247,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tyskland"
+ },
+ {
+  "airportCode": "BIO",
+  "airportName": "Bilbao",
+  "cityCode": "BIO",
+  "cityName": "Bilbao",
+  "long": -2.91061,
+  "lat": 43.3011,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "BLL",
+  "airportName": "Billund",
+  "cityCode": "BLL",
+  "cityName": "Billund",
+  "long": 9.157019,
+  "lat": 55.740334,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Danmark"
+ },
+ {
+  "airportCode": "BHX",
+  "airportName": "Birmingham",
+  "cityCode": "BHX",
+  "cityName": "Birmingham",
+  "long": -1.74803,
+  "lat": 52.4539,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Storbritannia"
+ },
+ {
+  "airportCode": "BOO",
+  "airportName": "Bodo",
+  "cityCode": "BOO",
+  "cityName": "Bodø",
+  "long": 14.3653,
+  "lat": 67.2692,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "BLQ",
+  "airportName": "Guglielmo Marconi",
+  "cityCode": "BLQ",
+  "cityName": "Bologna",
+  "long": 11.2887,
+  "lat": 44.5354,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "BOD",
+  "airportName": "Merignac",
+  "cityCode": "BOD",
+  "cityName": "Bordeaux",
+  "long": -0.715556,
+  "lat": 44.8283,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Frankrike"
+ },
+ {
+  "airportCode": "BOS",
+  "airportName": "Boston MA - Edward L. Logan Intl",
+  "cityCode": "BOS",
+  "cityName": "Boston",
+  "long": -71.0079,
+  "lat": 42.36197,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "BRU",
+  "airportName": "Brussels",
+  "cityCode": "BRU",
+  "cityName": "Brussel",
+  "long": 4.48444,
+  "lat": 50.9014,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Belgia"
+ },
+ {
+  "airportCode": "BUD",
+  "airportName": "Budapest - Liszt Ferenc Intl",
+  "cityCode": "BUD",
+  "cityName": "Budapest",
+  "long": 19.262394,
+  "lat": 47.43018,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Ungarn"
+ },
+ {
+  "airportCode": "CTA",
+  "airportName": "Fontanarossa",
+  "cityCode": "CTA",
+  "cityName": "Catania",
+  "long": 15.0664,
+  "lat": 37.4668,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "CHQ",
+  "airportName": "Ioannis Daskalogiannis",
+  "cityCode": "CHQ",
+  "cityName": "Chania",
+  "long": 24.1497,
+  "lat": 35.5317,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Hellas"
+ },
+ {
+  "airportCode": "ORD",
+  "airportName": "Chicago IL - O Hare Intl",
+  "cityCode": "CHI",
+  "cityName": "Chicago",
+  "long": -87.9048,
+  "lat": 41.9786,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "DUB",
+  "airportName": "Dublin - Intl",
+  "cityCode": "DUB",
+  "cityName": "Dublin",
+  "long": -6.262121,
+  "lat": 53.428715,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Irland"
+ },
+ {
+  "airportCode": "DBV",
+  "airportName": "Dubrovnik",
+  "cityCode": "DBV",
+  "cityName": "Dubrovnik",
+  "long": 18.265543,
+  "lat": 42.56225,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Kroatia"
+ },
+ {
+  "airportCode": "DUS",
+  "airportName": "Duesseldorf - Intl",
+  "cityCode": "DUS",
+  "cityName": "Düsseldorf",
+  "long": 6.76678,
+  "lat": 51.2895,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tyskland"
+ },
+ {
+  "airportCode": "EDI",
+  "airportName": "Edinburgh",
+  "cityCode": "EDI",
+  "cityName": "Edinburgh",
+  "long": -3.372288,
+  "lat": 55.950146,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Storbritannia"
+ },
+ {
+  "airportCode": "FAO",
+  "airportName": "Faro",
+  "cityCode": "FAO",
+  "cityName": "Faro",
+  "long": -7.96591,
+  "lat": 37.0144,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Portugal"
+ },
+ {
+  "airportCode": "FLR",
+  "airportName": "Peretola",
+  "cityCode": "FLR",
+  "cityName": "Firenze",
+  "long": 11.202822,
+  "lat": 43.80856,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "FRA",
+  "airportName": "Frankfurt - Intl",
+  "cityCode": "FRA",
+  "cityName": "Frankfurt",
+  "long": 8.561096,
+  "lat": 50.03024,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tyskland"
+ },
+ {
+  "airportCode": "FUE",
+  "airportName": "Fuerteventura",
+  "cityCode": "FUE",
+  "cityName": "Fuerteventura",
+  "long": -13.8638,
+  "lat": 28.4527,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "FAE",
+  "airportName": "Vagar",
+  "cityCode": "FAE",
+  "cityName": "Færøyene",
+  "long": -7.275782,
+  "lat": 62.063255,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Faroe Islands"
+ },
+ {
+  "airportCode": "GZP",
+  "airportName": "Gasipaza",
+  "cityCode": "GZP",
+  "cityName": "Gazipasa",
+  "long": 32.3006,
+  "lat": 36.299217,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tyrkia"
+ },
+ {
+  "airportCode": "GDN",
+  "airportName": "Lech Walesa",
+  "cityCode": "GDN",
+  "cityName": "Gdansk",
+  "long": 18.4662,
+  "lat": 54.3776,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Polen"
+ },
+ {
+  "airportCode": "GVA",
+  "airportName": "Geneva - Intl",
+  "cityCode": "GVA",
+  "cityName": "Geneva",
+  "long": 6.10895,
+  "lat": 46.2381,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sveits"
+ },
+ {
+  "airportCode": "GOT",
+  "airportName": "Landvetter",
+  "cityCode": "GOT",
+  "cityName": "Gøteborg",
+  "long": 12.2798,
+  "lat": 57.6628,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ },
+ {
+  "airportCode": "HAM",
+  "airportName": "Hamburg",
+  "cityCode": "HAM",
+  "cityName": "Hamburg",
+  "long": 9.98823,
+  "lat": 53.6304,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tyskland"
+ },
+ {
+  "airportCode": "HAJ",
+  "airportName": "Hannover",
+  "cityCode": "HAJ",
+  "cityName": "Hannover",
+  "long": 9.68508,
+  "lat": 52.4611,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tyskland"
+ },
+ {
+  "airportCode": "EVE",
+  "airportName": "Evenes",
+  "cityCode": "EVE",
+  "cityName": "Harstad-Narvik",
+  "long": 16.6781,
+  "lat": 68.4913,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "HAU",
+  "airportName": "Karmoy",
+  "cityCode": "HAU",
+  "cityName": "Haugesund",
+  "long": 5.20836,
+  "lat": 59.3453,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "HEL",
+  "airportName": "Vantaa",
+  "cityCode": "HEL",
+  "cityName": "Helsinki",
+  "long": 24.96334,
+  "lat": 60.318363,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Finland"
+ },
+ {
+  "airportCode": "KKN",
+  "airportName": "Kirkenes",
+  "cityCode": "KKN",
+  "cityName": "Kirkenes",
+  "long": 29.8913,
+  "lat": 69.7258,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "KRN",
+  "airportName": "Kiruna",
+  "cityCode": "KRN",
+  "cityName": "Kiruna",
+  "long": 20.3368,
+  "lat": 67.822,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ },
+ {
+  "airportCode": "KRK",
+  "airportName": "Krakow - John Paul Ii - Balice Intl",
+  "cityCode": "KRK",
+  "cityName": "Krakow",
+  "long": 19.7848,
+  "lat": 50.0777,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Polen"
+ },
+ {
+  "airportCode": "KRS",
+  "airportName": "Kjevik",
+  "cityCode": "KRS",
+  "cityName": "Kristiansand",
+  "long": 8.08537,
+  "lat": 58.2042,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "KSU",
+  "airportName": "Kvernberget",
+  "cityCode": "KSU",
+  "cityName": "Kristiansund",
+  "long": 7.82452,
+  "lat": 63.1118,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "CPH",
+  "airportName": "Kastrup",
+  "cityCode": "CPH",
+  "cityName": "København",
+  "long": 12.656,
+  "lat": 55.6179,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Danmark"
+ },
+ {
+  "airportCode": "LCA",
+  "airportName": "Larnaca",
+  "cityCode": "LCA",
+  "cityName": "Larnaca",
+  "long": 33.6249,
+  "lat": 34.8751,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Kypros"
+ },
+ {
+  "airportCode": "LPA",
+  "airportName": "Gran Canaria",
+  "cityCode": "LPA",
+  "cityName": "Las Palmas",
+  "long": -15.3866,
+  "lat": 27.9319,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "LIS",
+  "airportName": "Lisboa",
+  "cityCode": "LIS",
+  "cityName": "Lisboa",
+  "long": -9.13592,
+  "lat": 38.7813,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Portugal"
+ },
+ {
+  "airportCode": "LHR",
+  "airportName": "Heathrow",
+  "cityCode": "LON",
+  "cityName": "London",
+  "long": -0.461941,
+  "lat": 51.4706,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Storbritannia"
+ },
+ {
+  "airportCode": "LYR",
+  "airportName": "Longyearbyen",
+  "cityCode": "LYR",
+  "cityName": "Longyearbyen",
+  "long": 15.4656,
+  "lat": 78.2461,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "LAX",
+  "airportName": "Los Angeles CA - Intl",
+  "cityCode": "LAX",
+  "cityName": "Los Angeles",
+  "long": -118.408,
+  "lat": 33.9425,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "LLA",
+  "airportName": "Kallax",
+  "cityCode": "LLA",
+  "cityName": "Luleå",
+  "long": 22.122,
+  "lat": 65.5438,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ },
+ {
+  "airportCode": "LUX",
+  "airportName": "Luxembourg",
+  "cityCode": "LUX",
+  "cityName": "Luxembourg",
+  "long": 6.2044444,
+  "lat": 49.623333,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Luxembourg"
+ },
+ {
+  "airportCode": "LYS",
+  "airportName": "St-Exupery",
+  "cityCode": "LYS",
+  "cityName": "Lyon",
+  "long": 5.090139,
+  "lat": 45.725994,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Frankrike"
+ },
+ {
+  "airportCode": "FNC",
+  "airportName": "Madeira",
+  "cityCode": "FNC",
+  "cityName": "Madeira - Funchal",
+  "long": -16.7745,
+  "lat": 32.6979,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Portugal"
+ },
+ {
+  "airportCode": "MAD",
+  "airportName": "Adolfo Suarez Madrid-Barajas",
+  "cityCode": "MAD",
+  "cityName": "Madrid",
+  "long": -3.56264,
+  "lat": 40.471928,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "AGP",
+  "airportName": "Malaga",
+  "cityCode": "AGP",
+  "cityName": "Malaga",
+  "long": -4.49911,
+  "lat": 36.6749,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "MLA",
+  "airportName": "Malta - Luqa Intl",
+  "cityCode": "MLA",
+  "cityName": "Malta",
+  "long": 14.4775,
+  "lat": 35.8575,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Malta"
+ },
+ {
+  "airportCode": "MAN",
+  "airportName": "Manchester",
+  "cityCode": "MAN",
+  "cityName": "Manchester",
+  "long": -2.279521,
+  "lat": 53.349377,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Storbritannia"
+ },
+ {
+  "airportCode": "MIA",
+  "airportName": "Miami FL - Intl",
+  "cityCode": "MIA",
+  "cityName": "Miami",
+  "long": -80.2906,
+  "lat": 25.7932,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "MXP",
+  "airportName": "Malpensa",
+  "cityCode": "MIL",
+  "cityName": "Milan",
+  "long": 8.72811,
+  "lat": 45.6306,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "LIN",
+  "airportName": "Linate",
+  "cityCode": "MIL",
+  "cityName": "Milan",
+  "long": 9.27674,
+  "lat": 45.4451,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "BOM",
+  "airportName": "Chhatrapati Shivaji Maharaj International Airport",
+  "cityCode": "BOM",
+  "cityName": "Mumbai",
+  "long": 72.8679,
+  "lat": 19.0887,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "India"
+ },
+ {
+  "airportCode": "MUC",
+  "airportName": "Franz Josef Strauss",
+  "cityCode": "MUC",
+  "cityName": "München",
+  "long": 11.7861,
+  "lat": 48.3538,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tyskland"
+ },
+ {
+  "airportCode": "NAP",
+  "airportName": "Capodichino",
+  "cityCode": "NAP",
+  "cityName": "Napoli",
+  "long": 14.2908,
+  "lat": 40.886,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "EWR",
+  "airportName": "Newark Liberty Intl",
+  "cityCode": "NYC",
+  "cityName": "New York",
+  "long": -74.1687,
+  "lat": 40.6925,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "JFK",
+  "airportName": "John F. Kennedy Intl",
+  "cityCode": "NYC",
+  "cityName": "New York",
+  "long": -73.77932,
+  "lat": 40.639446,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "NCE",
+  "airportName": "Cote D Azur",
+  "cityCode": "NCE",
+  "cityName": "Nice",
+  "long": 7.21587,
+  "lat": 43.6584,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Frankrike"
+ },
+ {
+  "airportCode": "OLB",
+  "airportName": "Costa Smeralda",
+  "cityCode": "OLB",
+  "cityName": "Olbia",
+  "long": 9.51763,
+  "lat": 40.8987,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "PLQ",
+  "airportName": "Klaipeda/Palanga - Palanga Intl",
+  "cityCode": "PLQ",
+  "cityName": "Palanga",
+  "long": 21.0939,
+  "lat": 55.9732,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Litauen"
+ },
+ {
+  "airportCode": "PMO",
+  "airportName": "Punta Raisi",
+  "cityCode": "PMO",
+  "cityName": "Palermo",
+  "long": 13.091,
+  "lat": 38.176,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "PMI",
+  "airportName": "Palma Mallorca",
+  "cityCode": "PMI",
+  "cityName": "Palma Mallorca",
+  "long": 2.73881,
+  "lat": 39.5517,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "CDG",
+  "airportName": "Charles De Gaulle",
+  "cityCode": "PAR",
+  "cityName": "Paris",
+  "long": 2.55,
+  "lat": 49.0128,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Frankrike"
+ },
+ {
+  "airportCode": "PSA",
+  "airportName": "Galileo Galilei",
+  "cityCode": "PSA",
+  "cityName": "Pisa",
+  "long": 10.3927,
+  "lat": 43.6839,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "OPO",
+  "airportName": "Porto",
+  "cityCode": "OPO",
+  "cityName": "Porto",
+  "long": -8.68139,
+  "lat": 41.2481,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Portugal"
+ },
+ {
+  "airportCode": "POZ",
+  "airportName": "Lawica",
+  "cityCode": "POZ",
+  "cityName": "Poznan",
+  "long": 16.823359,
+  "lat": 52.421597,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Polen"
+ },
+ {
+  "airportCode": "PRG",
+  "airportName": "Vaclav Havel Airport Prague",
+  "cityCode": "PRG",
+  "cityName": "Prague",
+  "long": 14.259911,
+  "lat": 50.100876,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tsjekkisk Republikk"
+ },
+ {
+  "airportCode": "PUY",
+  "airportName": "Pula",
+  "cityCode": "PUY",
+  "cityName": "Pula",
+  "long": 13.9222,
+  "lat": 44.8935,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Kroatia"
+ },
+ {
+  "airportCode": "KEF",
+  "airportName": "Reykjavik - Keflavik Intl",
+  "cityCode": "REK",
+  "cityName": "Reykjavík",
+  "long": -22.6056,
+  "lat": 63.985,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Island"
+ },
+ {
+  "airportCode": "RHO",
+  "airportName": "Diagoras",
+  "cityCode": "RHO",
+  "cityName": "Rhodos",
+  "long": 28.0862,
+  "lat": 36.4054,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Hellas"
+ },
+ {
+  "airportCode": "RIX",
+  "airportName": "Riga - Intl",
+  "cityCode": "RIX",
+  "cityName": "Riga",
+  "long": 23.9711,
+  "lat": 56.9236,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Latvia"
+ },
+ {
+  "airportCode": "FCO",
+  "airportName": "Fiumicino",
+  "cityCode": "ROM",
+  "cityName": "Rom",
+  "long": 12.251998,
+  "lat": 41.80453,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "RNB",
+  "airportName": "Ronneby",
+  "cityCode": "RNB",
+  "cityName": "Ronneby",
+  "long": 15.265,
+  "lat": 56.2667,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ },
+ {
+  "airportCode": "SZG",
+  "airportName": "W. A. Mozart",
+  "cityCode": "SZG",
+  "cityName": "Salzburg",
+  "long": 13.0043,
+  "lat": 47.7933,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Østerrike"
+ },
+ {
+  "airportCode": "SFO",
+  "airportName": "San Francisco CA - Intl",
+  "cityCode": "SFO",
+  "cityName": "San Francisco",
+  "long": -122.374825,
+  "lat": 37.619804,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "SEA",
+  "airportName": "Seattle WA - Tacoma Intl",
+  "cityCode": "SEA",
+  "cityName": "Seattle",
+  "long": -122.31027,
+  "lat": 47.447945,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "ICN",
+  "airportName": "Seoul - Incheon Intl",
+  "cityCode": "SEL",
+  "cityName": "Seoul",
+  "long": 126.451,
+  "lat": 37.4691,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Korea"
+ },
+ {
+  "airportCode": "SVQ",
+  "airportName": "Sevilla",
+  "cityCode": "SVQ",
+  "cityName": "Sevilla",
+  "long": -5.89311,
+  "lat": 37.418,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "SFT",
+  "airportName": "Skelleftea",
+  "cityCode": "SFT",
+  "cityName": "Skellefteå",
+  "long": 21.0769,
+  "lat": 64.6248,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ },
+ {
+  "airportCode": "SPU",
+  "airportName": "Split",
+  "cityCode": "SPU",
+  "cityName": "Split",
+  "long": 16.298,
+  "lat": 43.5389,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Kroatia"
+ },
+ {
+  "airportCode": "SVG",
+  "airportName": "Sola",
+  "cityCode": "SVG",
+  "cityName": "Stavanger",
+  "long": 5.63778,
+  "lat": 58.8767,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "ARN",
+  "airportName": "Arlanda",
+  "cityCode": "STO",
+  "cityName": "Stockholm",
+  "long": 17.92883,
+  "lat": 59.64849,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ },
+ {
+  "airportCode": "STR",
+  "airportName": "Stuttgart",
+  "cityCode": "STR",
+  "cityName": "Stuttgart",
+  "long": 9.22196,
+  "lat": 48.6899,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Tyskland"
+ },
+ {
+  "airportCode": "SDL",
+  "airportName": "Sundsvall",
+  "cityCode": "SDL",
+  "cityName": "Sundsvall",
+  "long": 17.4439,
+  "lat": 62.5281,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ },
+ {
+  "airportCode": "TLL",
+  "airportName": "Lennart Meri",
+  "cityCode": "TLL",
+  "cityName": "Tallinn",
+  "long": 24.83264,
+  "lat": 59.413246,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Estland"
+ },
+ {
+  "airportCode": "TFS",
+  "airportName": "Sur",
+  "cityCode": "TCI",
+  "cityName": "Tenerife",
+  "long": -16.5725,
+  "lat": 28.0445,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Spania"
+ },
+ {
+  "airportCode": "SKG",
+  "airportName": "Makedonia",
+  "cityCode": "SKG",
+  "cityName": "Thessaloniki",
+  "long": 22.970009,
+  "lat": 40.51928,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Hellas"
+ },
+ {
+  "airportCode": "TIV",
+  "airportName": "Tivat",
+  "cityCode": "TIV",
+  "cityName": "Tivat",
+  "long": 18.7233,
+  "lat": 42.4047,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Montenegro"
+ },
+ {
+  "airportCode": "HND",
+  "airportName": "Haneda",
+  "cityCode": "TYO",
+  "cityName": "Tokyo",
+  "long": 139.78,
+  "lat": 35.5523,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Japan"
+ },
+ {
+  "airportCode": "YYZ",
+  "airportName": "Toronto - Lester B.Pearson Intl",
+  "cityCode": "YTO",
+  "cityName": "Toronto",
+  "long": -79.6306,
+  "lat": 43.6772,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Canada"
+ },
+ {
+  "airportCode": "TOS",
+  "airportName": "Langnes",
+  "cityCode": "TOS",
+  "cityName": "Tromsø",
+  "long": 18.9189,
+  "lat": 69.6833,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "TRD",
+  "airportName": "Vaernes",
+  "cityCode": "TRD",
+  "cityName": "Trondheim",
+  "long": 10.924,
+  "lat": 63.4578,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "TKU",
+  "airportName": "Turku",
+  "cityCode": "TKU",
+  "cityName": "Turku",
+  "long": 22.2628,
+  "lat": 60.5141,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Finland"
+ },
+ {
+  "airportCode": "UME",
+  "airportName": "Umea",
+  "cityCode": "UME",
+  "cityName": "Umea",
+  "long": 20.2828,
+  "lat": 63.7918,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ },
+ {
+  "airportCode": "VAA",
+  "airportName": "Vaasa",
+  "cityCode": "VAA",
+  "cityName": "Vasa",
+  "long": 21.7622,
+  "lat": 63.0507,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Finland"
+ },
+ {
+  "airportCode": "VCE",
+  "airportName": "Marco Polo",
+  "cityCode": "VCE",
+  "cityName": "Venezia",
+  "long": 12.3519,
+  "lat": 45.5053,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Italia"
+ },
+ {
+  "airportCode": "VNO",
+  "airportName": "Vilnius - Intl",
+  "cityCode": "VNO",
+  "cityName": "Vilnius",
+  "long": 25.2858,
+  "lat": 54.6341,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Litauen"
+ },
+ {
+  "airportCode": "VBY",
+  "airportName": "Visby",
+  "cityCode": "VBY",
+  "cityName": "Visby",
+  "long": 18.3462,
+  "lat": 57.6628,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ },
+ {
+  "airportCode": "WAW",
+  "airportName": "Frederic Chopin",
+  "cityCode": "WAW",
+  "cityName": "Warsaw",
+  "long": 20.9671,
+  "lat": 52.1657,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Polen"
+ },
+ {
+  "airportCode": "IAD",
+  "airportName": "Washington - Dulles Intl",
+  "cityCode": "WAS",
+  "cityName": "Washington",
+  "long": -77.4558,
+  "lat": 38.9445,
+  "flightClasses": [
+   "AG",
+   "AP",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "USA"
+ },
+ {
+  "airportCode": "VIE",
+  "airportName": "Vienna - Intl",
+  "cityCode": "VIE",
+  "cityName": "Wien",
+  "long": 16.5697,
+  "lat": 48.1103,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Østerrike"
+ },
+ {
+  "airportCode": "WRO",
+  "airportName": "Nicolaus Copernicus",
+  "cityCode": "WRO",
+  "cityName": "Wroclaw",
+  "long": 16.882095,
+  "lat": 51.103718,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Polen"
+ },
+ {
+  "airportCode": "ZRH",
+  "airportName": "Zurich",
+  "cityCode": "ZRH",
+  "cityName": "Zürich",
+  "long": 8.548056,
+  "lat": 47.458057,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sveits"
+ },
+ {
+  "airportCode": "AES",
+  "airportName": "Vigra",
+  "cityCode": "AES",
+  "cityName": "Ålesund",
+  "long": 6.1197,
+  "lat": 62.5625,
+  "flightClasses": [
+   "AG",
+   "AP"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Norge"
+ },
+ {
+  "airportCode": "AAR",
+  "airportName": "Aarhus",
+  "cityCode": "AAR",
+  "cityName": "Århus",
+  "long": 10.618286,
+  "lat": 56.30333,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Danmark"
+ },
+ {
+  "airportCode": "OSD",
+  "airportName": "Ostersund/Are Flyplass",
+  "cityCode": "OSD",
+  "cityName": "Østersund/Åre",
+  "long": 14.500322,
+  "lat": 63.194134,
+  "flightClasses": [
+   "AG",
+   "AB"
+  ],
+  "availability": {
+   "outbound": [],
+   "inbound": []
+  },
+  "countryName": "Sverige"
+ }
+]
