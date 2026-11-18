@@ -64,7 +64,7 @@ export function filterAndPrice(trips, params, today) {
   for (const t of trips) {
     if (t.origin !== params.from) continue;
     if (t.date < start || t.date > end) continue;
-    if (params.dest) { if (t.dest !== params.dest) continue; }
+    if (params.dest) { if (t.dest !== params.dest && t.destCityCode !== params.dest) continue; }
     else if (params.region !== "all" && t.region && t.region !== params.region) continue;
     if (!params.cabins.includes(t.cabin)) continue;
     const sas = isSasOperated(t);
@@ -92,7 +92,7 @@ export async function runSearch(provider, rawParams, { today = todayIso(), cache
   const params = normalizeParams(rawParams);
   const { start, end } = dateWindow(params.want, params.flex, today);
   if (end < today) return { params, window: { start, end }, results: [], expired: true };
-  const query = { origin: params.from, region: params.region, dest: params.dest, cabins: params.cabins, start, end };
+  const query = { origin: params.from, region: params.region, dest: params.dest, cabins: params.cabins, partners: params.partners, pax: params.pax, start, end };
   const cacheKey = JSON.stringify(query);
   let trips = cache?.get(cacheKey);
   if (!trips) {

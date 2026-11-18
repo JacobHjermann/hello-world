@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Bonusjakt",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Søker etter ledige EuroBonus-bonusreiser på sas.no hver tredje time og varsler deg når noe blir ledig.",
   "minimum_chrome_version": "111",
   "icons": {
@@ -25,8 +25,7 @@
     "notifications",
     "scripting",
     "tabs",
-    "unlimitedStorage",
-    "downloads"
+    "unlimitedStorage"
   ],
   "host_permissions": [
     "https://*.sas.no/*",
@@ -38,30 +37,13 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.sas.no/*",
-        "https://*.flysas.com/*",
-        "https://*.sas.se/*",
-        "https://*.sas.dk/*"
+        "https://www.sas.no/*"
       ],
       "js": [
-        "recorder-main.js"
+        "session-main.js"
       ],
       "run_at": "document_start",
-      "world": "MAIN",
-      "all_frames": true
-    },
-    {
-      "matches": [
-        "https://*.sas.no/*",
-        "https://*.flysas.com/*",
-        "https://*.sas.se/*",
-        "https://*.sas.dk/*"
-      ],
-      "js": [
-        "recorder-bridge.js"
-      ],
-      "run_at": "document_start",
-      "all_frames": true
+      "world": "MAIN"
     }
   ]
 }

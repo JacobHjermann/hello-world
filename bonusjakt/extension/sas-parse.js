@@ -50,15 +50,24 @@ export const offersUrl = (origin, dest, date) =>
  * reflect where award seats are open right now, so filtering on them would miss seats that open later.
  */
 export function pickDestinations(destinations, { region, dest }) {
-  if (dest) return destinations.filter((d) => d.airportCode === dest);
+  if (dest) return destinations.filter((d) => d.airportCode === dest || d.cityCode === dest);
   return destinations.filter((d) => region === "all" || regionOf(d) === region);
 }
 
 /** Destination list for the "Til" picker: code, city, airport, country and region, sorted by city. */
-export function destinationChoices(destinations) {
-  return destinations
-    .map((d) => ({ code: d.airportCode, city: d.cityName || d.airportName, airport: d.airportName, country: d.countryName, region: regionOf(d) }))
-    .sort((a, b) => a.city.localeCompare(b.city, "nb"));
+export function destinationChoices(destinations, partnerChoices = []) {
+  // City codes where SAS has one (TYO for Haneda), so SAS and partner seats meet in one choice.
+  const map = new Map();
+  for (const d of destinations) {
+    const code = d.cityCode || d.airportCode;
+    if (!map.has(code)) map.set(code, { code, city: d.cityName || d.airportName, airport: d.airportName, country: d.countryName, region: regionOf(d), sas: true });
+  }
+  for (const p of partnerChoices) {
+    const known = map.get(p.code);
+    if (known) known.partner = true;
+    else map.set(p.code, p);
+  }
+  return [...map.values()].sort((a, b) => a.city.localeCompare(b.city, "nb"));
 }
 
 /** Award Finder on sas.no for a route, where the user can see the seats and book. */
@@ -76,7 +85,7 @@ export function parseAvailability(items, { origin, start, end }) {
         if (!seats) continue;
         trips.push({
           key: `${day.date}|${origin}|${d.airportCode}|${cabin}`,
-          date: day.date, origin, dest: d.airportCode, destName: d.cityName || d.airportName,
+          date: day.date, origin, dest: d.airportCode, destCityCode: d.cityCode, destName: d.cityName || d.airportName,
           region: regionOf(d), cabin, airlines: ["SK"],
           pts: null, taxes: null, taxCurrency: "NOK",
           // Award Finder shows at most 10 per class; 10 means "10 or more".
@@ -111,4 +120,58 @@ export function parseAwardPrices(offer) {
     }
   }
   return prices;
+}
+
+// ---------- Partner award seats (SkyTeam), from sas.no's award booking: /award-api ----------
+// Built from a real recording (November 2026). One request covers one route and one day.
+// Every /award-api request needs the headers the sas.no page itself sends (including the login);
+// see session-main.js.
+
+export const AWARD_API = `${SAS_BASE}/award-api`;
+export const AWARD_APP = `${SAS_BASE}/booking/award/flights`;
+
+export const partnerLocationsUrl = () => `${AWARD_API}/locations?partner=SKYTEAM`;
+
+export function partnerFlightsUrl(origin, dest, date, { pax = 1, oneWay = true } = {}) {
+  const base = `${AWARD_API}/flights?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&outboundDate=${date}`;
+  const trip = oneWay ? "&tripType=one-way" : `&inboundDate=${addDaysIso(date, 7)}&tripType=round-trip`;
+  return `${base}${trip}&adults=${pax}&children=0&infants=0&youths=0`;
+}
+const addDaysIso = (iso, n) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+
+const PARTNER_REGION = { Europe: "europa", Asia: "asia", America: "nord-amerika" };
+
+/** Partner destinations for the "Til" picker, by city code (LON, TYO, NYC …). */
+export function partnerLocationChoices(locations) {
+  return Object.values(locations || {}).filter((c) => c?.cityCode).map((c) => {
+    const a = c.airports?.[0] || {};
+    const region = REGION_BY_COUNTRY[c.countryName] || PARTNER_REGION[a.regionName] || null;
+    return { code: c.cityCode, city: c.cityName, airport: (c.airports || []).map((x) => x.airportName).join(", ") || c.cityName, country: c.countryName, region, partner: true };
+  });
+}
+
+/** Outbound partner (and SAS) award flights from one /award-api/flights answer, as trips. */
+export function parsePartnerFlights(answer, { origin, destName }) {
+  const trips = [];
+  for (const f of answer?.outboundFlights || []) {
+    const date = String(f.startDateTimeInLocal || "").slice(0, 10);
+    const airlines = [...new Set((f.segments || []).map((s) => s.operatingCarrier?.code || s.marketingCarrier?.code).filter(Boolean))];
+    for (const c of f.cabins || []) {
+      const cabin = { economy: "economy", premium: "premium", business: "business" }[String(c.cabin).toLowerCase()];
+      if (!cabin) continue;
+      const prices = Object.values(c.price || {}).filter((p) => p?.type === "points" && p.points > 0);
+      if (!prices.length) continue;
+      const best = prices.reduce((a, b) => (b.points < a.points ? b : a));
+      trips.push({
+        key: `${date}|${origin}|${f.destination?.code}|${cabin}|${airlines.join("-")}|${(f.segments || []).map((s) => s.flightNumber).join("-")}`,
+        date, origin, dest: f.destination?.code, destCityCode: f.destinationCity?.code, destName,
+        region: null, cabin, airlines,
+        pts: best.points,
+        // The answer shows 0 in taxes before the booking step; treat that as not known yet.
+        taxes: best.totalTax > 0 ? best.totalTax : null, taxCurrency: "NOK",
+        seats: Number(c.availableSeats) || null, direct: f.stops === 0, source: "sas.no partner", award: true, partner: f.awardType !== "SAS",
+      });
+    }
+  }
+  return trips;
 }

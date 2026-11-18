@@ -1,7 +1,10 @@
 // Searches SAS's award seats on sas.no through the user's own browser session.
 // The answers are read in sas-parse.js; this file only does the fetching, pacing and caching.
 import { redactPlain } from "./redact.js";
-import { SAS_BASE, destinationsUrl, offersUrl, pickDestinations, parseAvailability, parseAwardPrices } from "./sas-parse.js";
+import {
+  SAS_BASE, AWARD_APP, destinationsUrl, offersUrl, pickDestinations, parseAvailability, parseAwardPrices,
+  partnerLocationsUrl, partnerFlightsUrl, parsePartnerFlights, partnerLocationChoices,
+} from "./sas-parse.js";
 
 const PAUSE_MS = 2500;          // Pause between requests: about the pace of a person clicking around.
 const CHUNK = 8;                // Destinations asked about per request.
@@ -10,39 +13,42 @@ const DEST_TTL = 24 * 3600e3;   // The destination list changes rarely.
 const PRICE_TTL = 7 * 24 * 3600e3;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const nextDay = (iso) => { const d = new Date(iso + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + 1); return d.toISOString().slice(0, 10); };
 
 export class SasBlockedError extends Error {}
 
-async function findOrOpenTab() {
-  const [tab] = await chrome.tabs.query({ url: `${SAS_BASE}/*` });
-  if (tab) return { tab, opened: false };
-  const created = await chrome.tabs.create({ url: `${SAS_BASE}/award-finder`, active: false });
-  await waitForLoad(created.id);
-  return { tab: created, opened: true };
+function runInTab(tabId, url) {
+  return chrome.scripting.executeScript({
+    target: { tabId },
+    world: "MAIN",
+    args: [url],
+    func: async (u) => {
+      try {
+        const res = await fetch(u, { credentials: "include", headers: { accept: "application/json" } });
+        return { status: res.status, ok: res.ok, type: res.headers.get("content-type") || "", text: await res.text() };
+      } catch (e) { return { status: 0, ok: false, type: "", text: String((e && e.message) || e) }; }
+    },
+  }).then(([r]) => r.result);
 }
 
 /**
  * Run `fetch` inside a sas.no tab, so the request carries the user's own cookies and login,
- * exactly as when they use the site themselves. Opens a background tab if none is open.
+ * exactly as when they use the site themselves. Tabs that can't be used (an error page, still
+ * loading) are skipped; if none works, a background tab is opened and closed again afterwards.
  * Returns status, content type and text; never throws for HTTP errors.
  */
 export async function sasRaw(url) {
-  const { tab, opened } = await findOrOpenTab();
+  for (const tab of await chrome.tabs.query({ url: `${SAS_BASE}/*` })) {
+    try { return { ...(await runInTab(tab.id, url)), tabPath: new URL(tab.url || SAS_BASE).pathname }; } catch { /* try the next tab */ }
+  }
+  const tab = await chrome.tabs.create({ url: `${SAS_BASE}/award-finder`, active: false });
   try {
-    const [{ result }] = await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      world: "MAIN",
-      args: [url],
-      func: async (u) => {
-        try {
-          const res = await fetch(u, { credentials: "include", headers: { accept: "application/json" } });
-          return { status: res.status, ok: res.ok, type: res.headers.get("content-type") || "", text: await res.text() };
-        } catch (e) { return { status: 0, ok: false, type: "", text: String(e && e.message || e) }; }
-      },
-    });
-    return { ...result, tabPath: new URL(tab.url || tab.pendingUrl || SAS_BASE).pathname };
+    await waitForLoad(tab.id);
+    return { ...(await runInTab(tab.id, url)), tabPath: "/award-finder (åpnet av Bonusjakt)" };
+  } catch (err) {
+    throw new Error(`Fikk ikke åpnet sas.no i en fane: ${err.message}. Åpne sas.no selv og prøv igjen.`);
   } finally {
-    if (opened) chrome.tabs.remove(tab.id).catch(() => {});
+    chrome.tabs.remove(tab.id).catch(() => {});
   }
 }
 
@@ -50,7 +56,10 @@ const describe = (url, r) => `${new URL(url).pathname} → ${r.status || "ingen 
 
 /** Fetch JSON from sas.no; errors say exactly what SAS answered. */
 export async function sasFetch(url) {
-  const r = await sasRaw(url);
+  return interpret(url, await sasRaw(url));
+}
+
+function interpret(url, r) {
   const isJson = r.type.includes("json");
   if (r.ok && isJson) return JSON.parse(r.text);
   // A check page means SAS wants to confirm a person is there. Stop and say so; never work around it.
@@ -62,6 +71,48 @@ export async function sasFetch(url) {
 }
 
 /** Two small test requests, for the "Test SAS-koblingen" button. */
+/**
+ * Requests to sas.no's award booking service (/award-api) need the headers the sas.no page itself
+ * sends, including the login. session-main.js notes them in the page; this runs the request in a
+ * tab that has them. If no tab has them yet, it opens the award booking page in the background so
+ * the page sets itself up, and waits for it.
+ */
+async function awardRequestInTab(tabId, url) {
+  const [{ result }] = await chrome.scripting.executeScript({
+    target: { tabId },
+    world: "MAIN",
+    args: [url],
+    func: async (u) => {
+      const h = window.__bonusjaktAwardHeaders;
+      if (!h) return null;
+      try {
+        const res = await fetch(u, { credentials: "include", headers: { accept: "application/json, text/plain, */*", ...h, "sas-correlation-id": crypto.randomUUID() } });
+        return { status: res.status, ok: res.ok, type: res.headers.get("content-type") || "", text: await res.text() };
+      } catch (e) { return { status: 0, ok: false, type: "", text: String((e && e.message) || e) }; }
+    },
+  });
+  return result;
+}
+
+export async function awardFetch(url) {
+  for (const tab of await chrome.tabs.query({ url: `${SAS_BASE}/*` })) {
+    const r = await awardRequestInTab(tab.id, url).catch(() => null);
+    if (r) return interpret(url, r);
+  }
+  const tab = await chrome.tabs.create({ url: AWARD_APP, active: false });
+  try {
+    await waitForLoad(tab.id);
+    for (let i = 0; i < 10; i++) {
+      const r = await awardRequestInTab(tab.id, url).catch(() => null);
+      if (r) return interpret(url, r);
+      await sleep(1500);
+    }
+    throw new Error("Fikk ikke kontakt med SAS sin bestilling av partnerbonusreiser. Er du logget inn på sas.no? Logg inn og prøv igjen.");
+  } finally {
+    chrome.tabs.remove(tab.id).catch(() => {});
+  }
+}
+
 export async function diagnose() {
   const lines = [];
   const tests = [
@@ -102,9 +153,29 @@ async function cached(key, ttl, load) {
  * priceLookups: how many new routes to price during a search. Automatic runs use a few so alerts carry
  * points; the search button uses 0 and prices the results afterwards (see lookupPrices).
  */
-export function createSasProvider({ fetchJson = sasFetch, priceLookups = MAX_PRICE_LOOKUPS } = {}) {
+export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetch, priceLookups = MAX_PRICE_LOOKUPS } = {}) {
   let calls = 0;
   const get = async (url) => { if (calls++) await sleep(PAUSE_MS); return fetchJson(url); };
+  const getAward = async (url) => { if (calls++) await sleep(PAUSE_MS); return fetchAward(url); };
+  let oneWayWorks = true;
+
+  const partnerLocations = () => cached("sasPartnerLocations", DEST_TTL, () => getAward(partnerLocationsUrl()));
+
+  /** Partner award seats to one destination, one request per day in the window. */
+  async function partnerTrips({ origin, dest, start, end, pax, destName }) {
+    const trips = [];
+    for (let date = start; date <= end; date = nextDay(date)) {
+      let answer;
+      if (oneWayWorks) {
+        try { answer = await getAward(partnerFlightsUrl(origin, dest, date, { pax, oneWay: true })); }
+        catch (err) { if (err instanceof SasBlockedError) throw err; oneWayWorks = false; }
+      }
+      // The site itself searched round trips; fall back to that and read only the outbound flights.
+      if (!oneWayWorks) answer = await getAward(partnerFlightsUrl(origin, dest, date, { pax, oneWay: false }));
+      trips.push(...parsePartnerFlights(answer, { origin, destName }).filter((t) => t.date === date));
+    }
+    return trips;
+  }
 
   let listsWork = true; // Does SAS accept several destinations in one request? Assume yes until it fails.
 
@@ -164,17 +235,31 @@ export function createSasProvider({ fetchJson = sasFetch, priceLookups = MAX_PRI
     live: true,
     destinations,
     lookupPrices,
-    async fetchTrips({ origin, region, dest, cabins, start, end }) {
+    /** Destination choices for the picker: SAS's own plus partner cities (if the partner list loads). */
+    async choices(origin) {
+      const own = await destinations(origin);
+      let partners = [];
+      try { partners = partnerLocationChoices(await partnerLocations()); } catch { /* SAS's own only */ }
+      return { own, partners };
+    },
+    async fetchTrips({ origin, region, dest, cabins, partners = true, pax = 1, start, end }) {
       calls = 0;
-      const dests = pickDestinations(await destinations(origin), { region, dest });
+      const all = await destinations(origin);
+      const dests = pickDestinations(all, { region, dest });
       const trips = [];
       for (let i = 0; i < dests.length; i += CHUNK) {
         const codes = dests.slice(i, i + CHUNK).map((d) => d.airportCode);
         trips.push(...parseAvailability(await availability(origin, codes), { origin, start, end }));
       }
+      // Partner award seats are searched one route and one day at a time, so only for a chosen destination.
+      if (dest && partners) {
+        const destName = dests[0]?.cityName;
+        trips.push(...(await partnerTrips({ origin, dest, start, end, pax, destName })));
+      }
       const wanted = trips.filter((t) => cabins.includes(t.cabin));
-      const prices = await lookupPrices(wanted.map(({ origin: o, dest: d, date }) => ({ origin: o, dest: d, date })), priceLookups);
-      for (const t of wanted) {
+      const unpriced = wanted.filter((t) => t.pts == null);
+      const prices = await lookupPrices(unpriced.map(({ origin: o, dest: d, date }) => ({ origin: o, dest: d, date })), priceLookups);
+      for (const t of unpriced) {
         const p = prices[`${t.origin}-${t.dest}`]?.[t.cabin];
         if (p) Object.assign(t, { pts: p.pts, taxes: p.taxes, taxCurrency: p.currency });
       }

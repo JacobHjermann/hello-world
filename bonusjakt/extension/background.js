@@ -5,13 +5,9 @@ import { REGIONS, ORIGINS, CITIES } from "./shared/airports.js";
 import { createDemoProvider } from "./shared/providers/demo.js";
 import { createSasProvider, diagnose } from "./sas.js";
 import { destinationChoices, awardFinderUrl } from "./sas-parse.js";
-import { redactEntry } from "./redact.js";
 
 const ALARM = "bonusjakt";
 const INTERVAL_MIN = 180;
-// Temporary: recording one partner award search on sas.no, to learn how partner seats are fetched.
-const MAX_RECORDINGS = 150;
-let recordQueue = Promise.resolve();
 
 // ---------- Notifications (desktop + optional Telegram) ----------
 const notifier = {
@@ -97,7 +93,8 @@ const handlers = {
     if (store.settings.demo) {
       return Object.entries(CITIES).filter(([c]) => !ORIGINS[c]).map(([code, city]) => ({ code, city, airport: city, country: "", region: null }));
     }
-    return destinationChoices(await createSasProvider().destinations(origin));
+    const { own, partners } = await createSasProvider().choices(origin);
+    return destinationChoices(own, partners);
   },
   async addWatch({ params, name, destName }) {
     const store = await ChromeStore.load();
@@ -131,21 +128,6 @@ const handlers = {
     return { results };
   },
   async diagnose() { return { report: await diagnose() }; },
-  async recStatus() { const { recording = false, recordings = [] } = await chrome.storage.local.get(["recording", "recordings"]); return { recording, count: recordings.length }; },
-  async setRecording({ on }) { await chrome.storage.local.set({ recording: Boolean(on) }); return { ok: true }; },
-  // Answers arrive in bursts; saving them one at a time keeps any from being lost.
-  recorded({ entry }) {
-    recordQueue = recordQueue.then(async () => {
-      const { recording, recordings = [] } = await chrome.storage.local.get(["recording", "recordings"]);
-      if (!recording) return { ok: false };
-      recordings.push(redactEntry(entry));
-      await chrome.storage.local.set({ recordings: recordings.slice(-MAX_RECORDINGS) });
-      return { ok: true };
-    }).catch(() => ({ ok: false }));
-    return recordQueue;
-  },
-  async getRecordings() { const { recordings = [] } = await chrome.storage.local.get("recordings"); return { recordings }; },
-  async clearRecordings() { await chrome.storage.local.set({ recordings: [] }); return { ok: true }; },
 };
 
 chrome.runtime.onMessage.addListener((msg, _sender, reply) => {

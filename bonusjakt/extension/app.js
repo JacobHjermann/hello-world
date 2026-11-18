@@ -40,7 +40,7 @@ const params = () => ({ from: $("from").value, want: $("want").value, flex: Numb
 async function loadDestinations() {
   try {
     destChoices = await call("destinations", { origin: $("from").value });
-    $("to-list").innerHTML = destChoices.map((d) => `<option value="${esc(d.city)} (${d.code})">${esc(d.airport)}${d.country ? ", " + esc(d.country) : ""}</option>`).join("");
+    $("to-list").innerHTML = destChoices.map((d) => `<option value="${esc(d.city)} (${d.code})">${esc(d.airport)}${d.country ? ", " + esc(d.country) : ""}${d.sas && d.partner ? " · SAS og partnere" : d.partner ? " · partnerfly" : ""}</option>`).join("");
   } catch { destChoices = []; }
 }
 $("from").addEventListener("change", () => { $("to").value = ""; loadDestinations(); });
@@ -115,6 +115,11 @@ async function fillPrices(results) {
 }
 
 const awardFinderUrl = (f) => `https://www.sas.no/award-finder?origin=${encodeURIComponent(f.origin)}&destination=${encodeURIComponent(f.dest)}`;
+// Partner award seats are booked in sas.no's partner award booking (same address the site uses).
+const partnerBookingUrl = (f) => `https://www.sas.no/booking/award/flights?origin=${encodeURIComponent(f.origin)}&destination=${encodeURIComponent(f.destCityCode || f.dest)}&outboundDate=${f.date}&adults=${st.pax}&children=0&infants=0`;
+const bookLink = (f) => f.source === "sas.no partner"
+  ? `<a class="book" href="${partnerBookingUrl(f)}" target="_blank" rel="noopener">Bestill partnerreise ↗</a>`
+  : `${bookLink(f)}`;
 
 function render(list, expired) {
   list.sort((a, b) => (a.pointsTotal ?? Infinity) - (b.pointsTotal ?? Infinity));
@@ -140,7 +145,7 @@ function render(list, expired) {
         ? `<div class="pts"><small>${f.priceMissing ? "Fant ikke poengprisen" : "Henter poengpris …"}</small></div><div class="sub">${f.amexApplied ? "Amex 2 for 1 gjelder · " : ""}${f.priceMissing ? "se prisen i Award Finder" : ""}</div>`
         : `<div class="pts">${f.amexApplied ? `<span class="strike">${fmt(f.pointsWithoutAmex)}</span>` : ""}${fmt(f.pointsTotal)} <small>poeng</small></div>
         <div class="sub">${f.amexApplied ? `Én betaler ${fmt(f.pointsPerPerson)} p, én reiser gratis` : `${fmt(f.pointsPerPerson)} p per person`} + ${taxes}</div>`}
-        <div class="seats-row">${seats}<a class="book" href="${awardFinderUrl(f)}" target="_blank" rel="noopener">Bestill i Award Finder ↗</a></div></div>
+        <div class="seats-row">${seats}${bookLink(f)}</div></div>
     </article>`;
   }).join("");
 }
@@ -201,30 +206,6 @@ $("diag").onclick = async () => {
   b.disabled = false; b.textContent = "Test SAS-koblingen";
 };
 
-// ---------- Recorder (temporary, for partner award searches) ----------
-async function recRefresh() {
-  const { recording, count } = await call("recStatus");
-  $("recording").checked = recording;
-  $("reccount").textContent = `${count} svar tatt opp`;
-  if (recording) $("rec-box").open = true;
-}
-$("recording").onchange = async (e) => { await call("setRecording", { on: e.target.checked }); toast(e.target.checked ? "Opptak er på. Last sas.no på nytt (F5) før du søker." : "Opptak er av."); recRefresh(); };
-$("recclear").onclick = async () => { await call("clearRecordings"); await recRefresh(); toast("Opptaket er slettet."); };
-async function downloadRecordings() {
-  const { recordings } = await call("getRecordings");
-  if (!recordings.length) throw new Error("Ingenting er tatt opp ennå. Slå på opptak, last sas.no på nytt (F5) og gjør et partnersøk.");
-  const blob = new Blob([JSON.stringify({ version: chrome.runtime.getManifest().version, recordings }, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  await chrome.downloads.download({ url, filename: `bonusjakt-partneropptak-${new Date().toISOString().slice(0, 10)}.json` });
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
-  return recordings.length;
-}
-// The toolbar popup closes as soon as a download starts, so the download runs from a full tab.
-$("recdownload").onclick = async () => {
-  if (document.documentElement.classList.contains("popup")) { chrome.tabs.create({ url: chrome.runtime.getURL("app.html?full&download") }); return; }
-  try { toast(`Lastet ned ${await downloadRecordings()} svar. Fila ligger i Nedlastinger-mappen.`); } catch (err) { toast(err.message); }
-};
-
 // ---------- Load ----------
 async function load() {
   status = await call("status");
@@ -253,11 +234,7 @@ async function load() {
     await load();
     $("from").innerHTML = Object.entries(status.origins).map(([code, city]) => `<option value="${code}">${esc(city)} (${code})</option>`).join("");
     loadDestinations();
-    recRefresh();
-    if (location.search.includes("download")) {
-      $("rec-box").open = true; $("rec-box").scrollIntoView();
-      try { toast(`Lastet ned ${await downloadRecordings()} svar. Fila ligger i Nedlastinger-mappen.`); } catch (err) { toast(err.message); }
-    }
+
     $("want").min = status.today;
     $("want").value = addDays(status.today, 60);
     flexNote();

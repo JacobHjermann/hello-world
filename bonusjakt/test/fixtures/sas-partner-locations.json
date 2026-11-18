@@ -1,0 +1,244 @@
+{
+ "AAL": {
+  "cityCode": "AAL",
+  "cityName": "Aalborg",
+  "countryCode": "DK",
+  "countryName": "Danmark",
+  "airportCodes": "AAL",
+  "airports": [
+   {
+    "airportCode": "AAL",
+    "airportName": "Aalborg",
+    "cityCode": "AAL",
+    "cityName": "Aalborg",
+    "countryCode": "DK",
+    "countryName": "Danmark",
+    "regionCode": "EU",
+    "regionName": "Europe"
+   }
+  ]
+ },
+ "LON": {
+  "cityCode": "LON",
+  "cityName": "London",
+  "countryCode": "GB",
+  "countryName": "Storbritannia",
+  "airportCodes": "LCY|LGW|LHR|SEN|STN",
+  "airports": [
+   {
+    "airportCode": "LCY",
+    "airportName": "City",
+    "cityCode": "LON",
+    "cityName": "London",
+    "countryCode": "GB",
+    "countryName": "Storbritannia",
+    "regionCode": "EU",
+    "regionName": "Europe"
+   },
+   {
+    "airportCode": "LGW",
+    "airportName": "Gatwick",
+    "cityCode": "LON",
+    "cityName": "London",
+    "countryCode": "GB",
+    "countryName": "Storbritannia",
+    "regionCode": "EU",
+    "regionName": "Europe"
+   },
+   {
+    "airportCode": "LHR",
+    "airportName": "Heathrow",
+    "cityCode": "LON",
+    "cityName": "London",
+    "countryCode": "GB",
+    "countryName": "Storbritannia",
+    "regionCode": "EU",
+    "regionName": "Europe"
+   },
+   {
+    "airportCode": "SEN",
+    "airportName": "Southend",
+    "cityCode": "LON",
+    "cityName": "London",
+    "countryCode": "GB",
+    "countryName": "Storbritannia",
+    "regionCode": "EU",
+    "regionName": "Europe"
+   },
+   {
+    "airportCode": "STN",
+    "airportName": "Stansted",
+    "cityCode": "LON",
+    "cityName": "London",
+    "countryCode": "GB",
+    "countryName": "Storbritannia",
+    "regionCode": "EU",
+    "regionName": "Europe"
+   }
+  ]
+ },
+ "AMS": {
+  "cityCode": "AMS",
+  "cityName": "Amsterdam",
+  "countryCode": "NL",
+  "countryName": "Nederland",
+  "airportCodes": "AMS",
+  "airports": [
+   {
+    "airportCode": "AMS",
+    "airportName": "Schiphol",
+    "cityCode": "AMS",
+    "cityName": "Amsterdam",
+    "countryCode": "NL",
+    "countryName": "Nederland",
+    "regionCode": "EU",
+    "regionName": "Europe"
+   }
+  ]
+ },
+ "PAR": {
+  "cityCode": "PAR",
+  "cityName": "Paris",
+  "countryCode": "FR",
+  "countryName": "Frankrike",
+  "airportCodes": "CDG|ORY",
+  "airports": [
+   {
+    "airportCode": "CDG",
+    "airportName": "Charles De Gaulle",
+    "cityCode": "PAR",
+    "cityName": "Paris",
+    "countryCode": "FR",
+    "countryName": "Frankrike",
+    "regionCode": "EU",
+    "regionName": "Europe"
+   },
+   {
+    "airportCode": "ORY",
+    "airportName": "Orly",
+    "cityCode": "PAR",
+    "cityName": "Paris",
+    "countryCode": "FR",
+    "countryName": "Frankrike",
+    "regionCode": "EU",
+    "regionName": "Europe"
+   }
+  ]
+ },
+ "ATL": {
+  "cityCode": "ATL",
+  "cityName": "Atlanta",
+  "countryCode": "US",
+  "countryName": "USA",
+  "airportCodes": "ATL",
+  "airports": [
+   {
+    "airportCode": "ATL",
+    "airportName": "Atlanta GA - Hartsfield-Jackson Intl",
+    "cityCode": "ATL",
+    "cityName": "Atlanta",
+    "countryCode": "US",
+    "countryName": "USA",
+    "regionCode": "AM",
+    "regionName": "America"
+   }
+  ]
+ },
+ "TYO": {
+  "cityCode": "TYO",
+  "cityName": "Tokyo",
+  "countryCode": "JP",
+  "countryName": "Japan",
+  "airportCodes": "HND|NRT",
+  "airports": [
+   {
+    "airportCode": "HND",
+    "airportName": "Haneda",
+    "cityCode": "TYO",
+    "cityName": "Tokyo",
+    "countryCode": "JP",
+    "countryName": "Japan",
+    "regionCode": "AS",
+    "regionName": "Asia"
+   },
+   {
+    "airportCode": "NRT",
+    "airportName": "Narita",
+    "cityCode": "TYO",
+    "cityName": "Tokyo",
+    "countryCode": "JP",
+    "countryName": "Japan",
+    "regionCode": "AS",
+    "regionName": "Asia"
+   }
+  ]
+ },
+ "SEL": {
+  "cityCode": "SEL",
+  "cityName": "Seoul",
+  "countryCode": "KR",
+  "countryName": "Korea",
+  "airportCodes": "GMP|ICN",
+  "airports": [
+   {
+    "airportCode": "GMP",
+    "airportName": "Seoul - Gimpo Intl",
+    "cityCode": "SEL",
+    "cityName": "Seoul",
+    "countryCode": "KR",
+    "countryName": "Korea",
+    "regionCode": "AS",
+    "regionName": "Asia"
+   },
+   {
+    "airportCode": "ICN",
+    "airportName": "Seoul - Incheon Intl",
+    "cityCode": "SEL",
+    "cityName": "Seoul",
+    "countryCode": "KR",
+    "countryName": "Korea",
+    "regionCode": "AS",
+    "regionName": "Asia"
+   }
+  ]
+ },
+ "NYC": {
+  "cityCode": "NYC",
+  "cityName": "New York",
+  "countryCode": "US",
+  "countryName": "USA",
+  "airportCodes": "EWR|JFK|LGA",
+  "airports": [
+   {
+    "airportCode": "EWR",
+    "airportName": "Newark Liberty Intl",
+    "cityCode": "NYC",
+    "cityName": "New York",
+    "countryCode": "US",
+    "countryName": "USA",
+    "regionCode": "AM",
+    "regionName": "America"
+   },
+   {
+    "airportCode": "JFK",
+    "airportName": "John F. Kennedy Intl",
+    "cityCode": "NYC",
+    "cityName": "New York",
+    "countryCode": "US",
+    "countryName": "USA",
+    "regionCode": "AM",
+    "regionName": "America"
+   },
+   {
+    "airportCode": "LGA",
+    "airportName": "La Guardia",
+    "cityCode": "NYC",
+    "cityName": "New York",
+    "countryCode": "US",
+    "countryName": "USA",
+    "regionCode": "AM",
+    "regionName": "America"
+   }
+  ]
+ }
+}

@@ -84,7 +84,7 @@ test("member profile data is masked whole", () => {
 test("a chosen destination narrows the search to that one", () => {
   assert.deepEqual(pickDestinations(destinations, { region: "europa", dest: "HND" }).map((d) => d.airportCode), ["HND"]);
   const trips = parseAvailability(aal, { origin: "OSL", start: "2026-11-21", end: "2026-11-21" });
-  const other = { ...trips[0], key: "x", dest: "CPH" };
+  const other = { ...trips[0], key: "x", dest: "CPH", destCityCode: "CPH" };
   const params = normalizeParams({ from: "OSL", want: "2026-11-21", flex: 0, region: "asia", dest: "aal", cabins: ["business", "economy"], pax: 1 });
   assert.equal(params.dest, "AAL");
   const { results } = filterAndPrice([...trips, other], params, "2026-11-16");
@@ -94,9 +94,58 @@ test("a chosen destination narrows the search to that one", () => {
 
 test("destination list for the picker comes from SAS, sorted by city", () => {
   const list = destinationChoices(destinations);
-  assert.equal(list.length, destinations.length);
-  const tokyo = list.find((d) => d.code === "HND");
-  assert.deepEqual(tokyo, { code: "HND", city: "Tokyo", airport: "Haneda", country: "Japan", region: "asia" });
+  // Cities with several SAS airports (New York, Milano …) become one choice.
+  assert.deepEqual(new Set(list.map((d) => d.code)), new Set(destinations.map((d) => d.cityCode || d.airportCode)));
+  const tokyo = list.find((d) => d.code === "TYO");
+  assert.deepEqual(tokyo, { code: "TYO", city: "Tokyo", airport: "Haneda", country: "Japan", region: "asia", sas: true });
   assert.ok(list.every((d, i) => i === 0 || list[i - 1].city.localeCompare(d.city, "nb") <= 0));
   assert.equal(awardFinderUrl("OSL", "HND"), "https://www.sas.no/award-finder?origin=OSL&destination=HND");
+});
+
+// ---------- Partner award seats ----------
+import { parsePartnerFlights, partnerLocationChoices, partnerFlightsUrl } from "../extension/sas-parse.js";
+const partner = fx("sas-partner-flights-OSL-LON.json");
+const partnerLocs = fx("sas-partner-locations.json");
+
+test("reads partner award flights from the award booking answer", () => {
+  const trips = parsePartnerFlights(partner, { origin: "OSL", destName: "London" });
+  assert.equal(trips.length, 1);
+  const t = trips[0];
+  assert.equal(t.date, "2026-12-10");
+  assert.equal(t.dest, "LHR");
+  assert.equal(t.destCityCode, "LON");
+  assert.equal(t.cabin, "business");
+  assert.deepEqual(t.airlines, ["KL"]);
+  assert.equal(t.pts, 40000);
+  assert.equal(t.seats, 3);
+  assert.equal(t.direct, false);
+  assert.equal(t.partner, true);
+  assert.equal(t.taxes, null); // 0 in the answer means "not known before booking"
+});
+
+test("partner seats: city code matches, Amex 2 for 1 does not apply to KLM", () => {
+  const trips = parsePartnerFlights(partner, { origin: "OSL", destName: "London" });
+  const params = normalizeParams({ from: "OSL", want: "2026-12-10", flex: 0, dest: "LON", cabins: ["business"], pax: 2, amex: true });
+  const { results } = filterAndPrice(trips, params, "2026-11-18");
+  assert.equal(results.length, 1);
+  assert.equal(results[0].amexApplied, false);
+  assert.equal(results[0].pointsTotal, 80000);
+  assert.equal(results[0].destCity, "London");
+  const noPartners = filterAndPrice(trips, { ...params, partners: false }, "2026-11-18");
+  assert.equal(noPartners.results.length, 0);
+});
+
+test("SAS and partner destinations meet in one picker list by city code", () => {
+  const choices = destinationChoices(destinations, partnerLocationChoices(partnerLocs));
+  const tokyo = choices.filter((c) => c.city === "Tokyo");
+  assert.equal(tokyo.length, 1);
+  assert.equal(tokyo[0].code, "TYO");
+  assert.equal(tokyo[0].sas && tokyo[0].partner, true);
+  const atl = choices.find((c) => c.code === "ATL");
+  assert.ok(atl && atl.partner);
+  assert.deepEqual(pickDestinations(destinations, { dest: "TYO" }).map((d) => d.airportCode), ["HND"]);
+});
+
+test("partner search URL matches the site's", () => {
+  assert.equal(partnerFlightsUrl("OSL", "LON", "2026-12-10", { pax: 2, oneWay: false }), "https://www.sas.no/award-api/flights?origin=OSL&destination=LON&outboundDate=2026-12-10&inboundDate=2026-12-17&tripType=round-trip&adults=2&children=0&infants=0&youths=0");
 });
