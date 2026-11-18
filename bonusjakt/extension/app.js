@@ -95,18 +95,48 @@ function flexNote() {
 }
 
 // ---------- Search ----------
+// ---------- Progress bar and "Avbryt søk" ----------
+const PHASE = { search: "Søker", prices: "Henter poengpriser" };
+function showProgress(kind) {
+  $("progress").hidden = false;
+  $("progress").classList.add("indeterminate");
+  $("progress-text").textContent = `${PHASE[kind]} …`;
+  $("progress-count").textContent = "";
+  $("progress-bar").style.width = "8%";
+  $("cancel").disabled = false;
+}
+const hideProgress = () => { $("progress").hidden = true; };
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg?.type !== "progress" || $("progress").hidden || msg.finished) return;
+  if (msg.total) {
+    $("progress").classList.remove("indeterminate");
+    $("progress-bar").style.width = `${Math.max(4, Math.round((msg.done / msg.total) * 100))}%`;
+    $("progress-count").textContent = `${msg.done} av ${msg.total} forespørsler`;
+  }
+  $("progress-text").textContent = msg.phase ? `${PHASE[msg.kind] || "Søker"} · ${msg.phase}` : `${PHASE[msg.kind] || "Søker"} …`;
+});
+$("cancel").onclick = async () => {
+  $("cancel").disabled = true;
+  $("progress-text").textContent = "Avbryter etter forespørselen som pågår …";
+  try { await call("cancel"); } catch { /* the search ends on its own */ }
+};
+const isCancel = (err) => /avbrutt/i.test(err?.message || "");
+
 $("search").addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = $("go"); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Søker…';
   $("results-head").hidden = false;
+  showProgress("search");
   try {
     const data = await call("search", { params: params() });
     lastResults = data.results;
     render(lastResults, data.expired);
+    hideProgress();
     fillPrices(lastResults);
   } catch (err) {
-    $("count").textContent = "Søket feilet";
-    $("list").innerHTML = `<div class="empty">${esc(err.message)}</div>`;
+    hideProgress();
+    $("count").textContent = isCancel(err) ? "Søket ble avbrutt" : "Søket feilet";
+    $("list").innerHTML = `<div class="empty">${isCancel(err) ? "Du avbrøt søket. Trykk «Søk nå» for å søke igjen." : esc(err.message)}</div>`;
   } finally { btn.disabled = false; btn.textContent = "Søk nå"; }
 });
 
@@ -117,15 +147,16 @@ async function fillPrices(results) {
   const missing = results.filter((r) => r.pointsTotal == null);
   if (!missing.length) return;
   const routes = [...new Map(missing.map((r) => [`${r.origin}-${r.dest}`, { origin: r.origin, dest: r.dest, date: r.date }])).values()];
-  $("count").dataset.extra = " · henter poengpriser …"; $("count").textContent += $("count").dataset.extra;
-  let prices = {};
-  try { prices = await call("prices", { routes }); } catch { /* shown as not found below */ }
+  showProgress("prices");
+  let prices = {}, cancelled = false;
+  try { prices = await call("prices", { routes }); } catch (err) { cancelled = isCancel(err); }
   if (results !== lastResults) return; // a newer search has started
+  hideProgress();
   for (const r of results) {
     if (r.pointsTotal != null) continue;
     const p = prices[`${r.origin}-${r.dest}`]?.[r.cabin];
     if (p) Object.assign(r, { pts: p.pts, taxes: p.taxes, taxCurrency: p.currency }, price({ ...r, pts: p.pts, taxes: p.taxes }, { pax: st.pax, amex: st.amex }));
-    else r.priceMissing = true;
+    else r.priceMissing = cancelled ? "cancelled" : true;
   }
   render(results);
 }
@@ -135,7 +166,7 @@ const awardFinderUrl = (f) => `https://www.sas.no/award-finder?origin=${encodeUR
 const partnerBookingUrl = (f) => `https://www.sas.no/booking/award/flights?origin=${encodeURIComponent(f.origin)}&destination=${encodeURIComponent(f.destCityCode || f.dest)}&outboundDate=${f.date}&adults=${st.pax}&children=0&infants=0`;
 const bookLink = (f) => f.source === "sas.no partner"
   ? `<a class="book" href="${partnerBookingUrl(f)}" target="_blank" rel="noopener">Bestill partnerreise ↗</a>`
-  : `${bookLink(f)}`;
+  : `<a class="book" href="${awardFinderUrl(f)}" target="_blank" rel="noopener">Bestill i Award Finder ↗</a>`;
 
 function render(list, expired) {
   list.sort((a, b) => (a.pointsTotal ?? Infinity) - (b.pointsTotal ?? Infinity));
@@ -176,7 +207,7 @@ function cards(items) {
         <div class="tags"><span class="tag ${cls}">${CABNAME[f.cabin]}</span><span class="tag ${f.sasOperated ? "" : "partner"}">${esc(f.airlineNames.join(" / "))}</span>
           <span class="tag off">${off}</span>${f.amexApplied ? '<span class="tag amex">Amex 2 for 1</span>' : ""}</div></div>
       <div class="price">${f.pointsTotal == null
-        ? `<div class="pts"><small>${f.priceMissing ? "Fant ikke poengprisen" : "Henter poengpris …"}</small></div><div class="sub">${f.amexApplied ? "Amex 2 for 1 gjelder · " : ""}${f.priceMissing ? "se prisen i Award Finder" : ""}</div>`
+        ? `<div class="pts"><small>${f.priceMissing === "cancelled" ? "Poengpris ikke hentet" : f.priceMissing ? "Fant ikke poengprisen" : "Henter poengpris …"}</small></div><div class="sub">${f.amexApplied ? "Amex 2 for 1 gjelder · " : ""}${f.priceMissing ? "se prisen i Award Finder" : ""}</div>`
         : `<div class="pts">${f.amexApplied ? `<span class="strike">${fmt(f.pointsWithoutAmex)}</span>` : ""}${fmt(f.pointsTotal)} <small>poeng</small></div>
         <div class="sub">${f.amexApplied ? `Én betaler ${fmt(f.pointsPerPerson)} p, én reiser gratis` : `${fmt(f.pointsPerPerson)} p per person`} + ${taxes}</div>`}
         <div class="seats-row">${seats}${bookLink(f)}</div></div>

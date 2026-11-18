@@ -64,6 +64,23 @@ async function runAll(reason) {
 }
 chrome.alarms.onAlarm.addListener((a) => { if (a.name === ALARM) runAll("automatisk"); });
 
+// ---------- Searches started from the page: progress and cancelling ----------
+let job = null;
+/** Run one search job; a new one replaces (cancels) the one before. Progress goes to the open page. */
+async function withJob(kind, fn) {
+  job?.controller.abort();
+  const controller = new AbortController();
+  const mine = { kind, controller };
+  job = mine;
+  const send = (p) => chrome.runtime.sendMessage({ type: "progress", kind, ...p }).catch(() => { /* page closed */ });
+  try {
+    return await fn(controller.signal, send);
+  } finally {
+    if (job === mine) job = null;
+    send({ finished: true });
+  }
+}
+
 // ---------- Messages from the Bonusjakt page ----------
 const handlers = {
   async status() {
@@ -79,13 +96,20 @@ const handlers = {
   // The search button shows seats first; points are filled in afterwards with prices().
   async search({ params }) {
     const store = await ChromeStore.load();
-    const provider = store.settings.demo ? createDemoProvider() : createSasProvider({ priceLookups: 0 });
-    return runSearch(provider, params, { today: todayIso() });
+    return withJob("search", (signal, onProgress) => {
+      const provider = store.settings.demo ? createDemoProvider() : createSasProvider({ priceLookups: 0, signal, onProgress });
+      return runSearch(provider, params, { today: todayIso() });
+    });
   },
   async prices({ routes }) {
     const store = await ChromeStore.load();
     if (store.settings.demo) return {};
-    return createSasProvider().lookupPrices(routes);
+    return withJob("prices", (signal, onProgress) => createSasProvider({ signal, onProgress }).lookupPrices(routes));
+  },
+  // "Avbryt søk": stops the running search or price lookup after the request in flight.
+  async cancel() {
+    job?.controller.abort();
+    return { cancelled: Boolean(job) };
   },
   // Destinations for the "Til" field: SAS's own Award Finder list for the chosen origin.
   async destinations({ origin }) {

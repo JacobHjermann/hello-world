@@ -18,6 +18,30 @@ const daysBetween = (a, b) => Math.round((new Date(b + "T12:00:00Z") - new Date(
 const minIso = (a, b) => (a < b ? a : b);
 
 export class SasBlockedError extends Error {}
+export class SearchCancelled extends Error {
+  constructor() { super("Søket ble avbrutt."); }
+}
+
+/** Pause that ends early (with SearchCancelled) when the search is cancelled. */
+const pause = (ms, signal) => new Promise((resolve, reject) => {
+  if (signal?.aborted) return reject(new SearchCancelled());
+  const t = setTimeout(resolve, ms);
+  signal?.addEventListener("abort", () => { clearTimeout(t); reject(new SearchCancelled()); }, { once: true });
+});
+
+/**
+ * Counts the requests a search will make and has made, for the progress bar.
+ * `add` grows the plan (it can grow mid-search, e.g. when SAS doesn't take lists), `step` marks one done.
+ */
+function progressTracker(onProgress) {
+  const p = { done: 0, total: 0, phase: "" };
+  const emit = () => onProgress?.({ done: p.done, total: Math.max(p.total, p.done), phase: p.phase });
+  return {
+    add(n) { p.total += n; emit(); },
+    step() { p.done++; emit(); },
+    phase(text) { p.phase = text; emit(); },
+  };
+}
 
 function runInTab(tabId, url) {
   return chrome.scripting.executeScript({
@@ -155,10 +179,17 @@ async function cached(key, ttl, load) {
  * priceLookups: how many new routes to price during a search. Automatic runs use a few so alerts carry
  * points; the search button uses 0 and prices the results afterwards (see lookupPrices).
  */
-export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetch, priceLookups = MAX_PRICE_LOOKUPS } = {}) {
+export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetch, priceLookups = MAX_PRICE_LOOKUPS, signal, onProgress, pauseMs = PAUSE_MS } = {}) {
   let calls = 0;
-  const get = async (url) => { if (calls++) await sleep(PAUSE_MS); return fetchJson(url); };
-  const getAward = async (url) => { if (calls++) await sleep(PAUSE_MS); return fetchAward(url); };
+  const track = progressTracker(onProgress);
+  const check = () => { if (signal?.aborted) throw new SearchCancelled(); };
+  const request = async (fn, url) => {
+    check();
+    if (calls++) await pause(pauseMs, signal);
+    try { return await fn(url); } finally { track.step(); check(); }
+  };
+  const get = (url) => request(fetchJson, url);
+  const getAward = (url) => request(fetchAward, url);
   let oneWayWorks = true;
 
   const partnerLocations = () => cached("sasPartnerLocations", DEST_TTL, () => getAward(partnerLocationsUrl()));
@@ -173,7 +204,11 @@ export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetc
       try {
         const [o, d] = dir === "out" ? [origin, dest] : [dest, origin];
         return parse(await getAward(partnerFlightsUrl(o, d, date, { pax, oneWay: true })), "outboundFlights", dir, ctx, date);
-      } catch (err) { if (err instanceof SasBlockedError) throw err; oneWayWorks = false; }
+      } catch (err) {
+        if (err instanceof SasBlockedError || err instanceof SearchCancelled) throw err;
+        oneWayWorks = false;
+        track.add(1); // the same day again, in the round-trip form
+      }
     }
     if (dir === "out") {
       return parse(await getAward(partnerFlightsUrl(origin, dest, date, { pax, oneWay: false })), "outboundFlights", "out", ctx, date);
@@ -192,7 +227,9 @@ export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetc
     const trips = [];
     if (dirs.includes("out") && dirs.includes("home")) {
       const days = Math.max(daysBetween(start, end), daysBetween(backStart, backEnd));
+      track.add(days + 1);
       for (let i = 0; i <= days; i++) {
+        track.phase(`Partnerfly: dag ${i + 1} av ${days + 1}`);
         const out = minIso(addDays(start, i), end), home = minIso(addDays(backStart, i), backEnd);
         const answer = await getAward(partnerFlightsUrl(ctx.origin, ctx.dest, out, { pax: ctx.pax, oneWay: false, inboundDate: home }));
         trips.push(...parse(answer, "outboundFlights", "out", ctx, out), ...parse(answer, "inboundFlights", "home", ctx, home));
@@ -201,24 +238,32 @@ export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetc
     }
     const dir = dirs.includes("home") ? "home" : "out";
     const [from, to] = dir === "out" ? [start, end] : [backStart, backEnd];
-    for (let date = from; date <= to; date = addDays(date, 1)) trips.push(...(await partnerOneWay(ctx, dir, date)));
+    const total = daysBetween(from, to) + 1;
+    track.add(total);
+    let n = 0;
+    for (let date = from; date <= to; date = addDays(date, 1)) {
+      track.phase(`Partnerfly ${dir === "home" ? "hjem" : "ut"}: dag ${++n} av ${total}`);
+      trips.push(...(await partnerOneWay(ctx, dir, date)));
+    }
     return trips;
   }
 
   let listsWork = true; // Does SAS accept several destinations in one request? Assume yes until it fails.
 
   async function oneByOne(origin, codes) {
+    track.add(codes.length);
     const all = [];
     for (const c of codes) all.push(...(await get(destinationsUrl(origin, [c], { availability: true }))));
     return all;
   }
 
   async function availability(origin, codes) {
-    if (codes.length === 1 || !listsWork) return oneByOne(origin, codes);
+    if (codes.length === 1 || !listsWork) { track.add(-1); return oneByOne(origin, codes); }
     let res;
     try {
       res = await get(destinationsUrl(origin, codes, { availability: true }));
-    } catch {
+    } catch (err) {
+      if (err instanceof SearchCancelled || err instanceof SasBlockedError) throw err;
       // A list request that fails (while single ones work) means lists aren't supported.
       listsWork = false;
       return oneByOne(origin, codes);
@@ -228,7 +273,7 @@ export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetc
     return res;
   }
 
-  const destinations = (origin) => cached(`sasDest:${origin}`, DEST_TTL, () => get(destinationsUrl(origin)));
+  const destinations = (origin) => cached(`sasDest:${origin}`, DEST_TTL, () => { track.add(1); track.phase("Henter SAS sine destinasjoner"); return get(destinationsUrl(origin)); });
 
   /**
    * Award prices per route ("OSL-HND"), from the cache or looked up on the booking page, at most
@@ -245,11 +290,14 @@ export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetc
       if (known && Date.now() - known.at < PRICE_TTL) { out[route] = known.prices; continue; }
       if (lookups >= limit) continue;
       lookups++;
+      track.add(1);
+      track.phase(`Poengpris: ${origin}–${dest}`);
       try {
         const prices = parseAwardPrices(await get(offersUrl(origin, dest, date)));
         if (Object.keys(prices).length) { sasPrices[route] = { at: Date.now(), prices }; out[route] = prices; }
         else out[route] = null;
-      } catch {
+      } catch (err) {
+        if (err instanceof SearchCancelled) { await chrome.storage.local.set({ sasPrices }); throw err; }
         // A missing price never stops anything: the seat is shown with a link to Award Finder.
         out[route] = null;
       }
@@ -275,7 +323,9 @@ export function createSasProvider({ fetchJson = sasFetch, fetchAward = awardFetc
       const all = await destinations(origin);
       const dests = pickDestinations(all, { region, dest });
       const trips = [];
+      track.add(Math.ceil(dests.length / CHUNK));
       for (let i = 0; i < dests.length; i += CHUNK) {
+        track.phase(`SAS sine fly: ${Math.min(i + CHUNK, dests.length)} av ${dests.length} destinasjoner`);
         const codes = dests.slice(i, i + CHUNK).map((d) => d.airportCode);
         trips.push(...parseAvailability(await availability(origin, codes), { origin, start, end, backStart, backEnd, dirs }));
       }

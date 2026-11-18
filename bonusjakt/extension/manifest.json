@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Bonusjakt",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Søker etter ledige EuroBonus-bonusreiser på sas.no hver tredje time og varsler deg når noe blir ledig.",
   "minimum_chrome_version": "111",
   "icons": {

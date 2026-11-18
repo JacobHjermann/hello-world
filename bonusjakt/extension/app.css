@@ -26,3 +26,13 @@ input[type=password]{font:inherit;color:var(--fg);background:var(--surface-2);bo
 .triptype .chip{font-weight:600}
 .section-h{font-family:var(--display);font-size:17px;margin:14px 0 2px;display:flex;gap:10px;align-items:baseline}
 .section-h small{font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted)}
+.progress{display:grid;gap:8px;background:var(--surface-2);border-radius:12px;padding:12px 14px}
+.progress-top{display:flex;justify-content:space-between;align-items:center;gap:8px 14px;flex-wrap:wrap;font-size:14px}
+.progress-right{display:flex;align-items:center;gap:12px;color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px}
+.progress-track{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress-track i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .4s ease}
+.progress.indeterminate .progress-track i{width:30%!important;animation:bj-slide 1.2s ease-in-out infinite}
+@keyframes bj-slide{0%{transform:translateX(-100%)}100%{transform:translateX(340%)}}
+.btn.small{padding:6px 12px;font-size:13px}
+@media (prefers-reduced-motion:reduce){.progress.indeterminate .progress-track i{animation:none}}
+.progress .btn.ghost{background:var(--surface);border:1px solid var(--line)}
